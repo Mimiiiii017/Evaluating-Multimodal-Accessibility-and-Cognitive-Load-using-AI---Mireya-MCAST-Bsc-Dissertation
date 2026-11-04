@@ -1,0 +1,874 @@
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Cloud-LLM-Preliminary  ·  Accessibility Auditing Quality                                                    ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Preset   Balanced  (fixed — only model differs)                                                             ║
+║  Models   3                                                                                                  ║
+║  Runs/combo 1                                                                                                ║
+║  Scoring  80% F1  +  20% speed  (higher = better)                                                            ║
+║  Run at   4/13/2026, 1:21:39 PM                                                                              ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ① OVERALL RANKING  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+       Model                              Score                       F1    Prec   Recall   TP   FN   FP  AvgTime  Err
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TP = correctly found issues  ·  FN = missed issues  ·  FP = hallucinated issues  ·  F1 = harmonic mean of Prec & Recall
+
+    🥇 qwen3.5:397b (~397B)               57.7% █████████░░░░░░░   47.1%   83.8%    33.9%   68  133   17   165.9s    0
+    🥈 kimi-k2.5 (~?B)                    42.5% ███████░░░░░░░░░   53.1%   81.2%    42.3%   85  116   28   423.5s    0
+    🥉 gpt-oss:120b (~120B)               24.3% ████░░░░░░░░░░░░   21.5%   90.6%    17.0%   34  167   15   332.5s    0
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ② HIGHLIGHTS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  ╔══ HIGHLIGHTS ════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║   🏆  Best overall         qwen3.5:397b (~397B)   composite=57.7%                                          ║
+  ║   🎯  Best F1 (accuracy)   kimi-k2.5 (~?B)   F1=53.1%                                                      ║
+  ║   📊  Best overall Acc     kimi-k2.5 (~?B)   Acc=82.6%                                                     ║
+  ║   🔬  Best MCC             kimi-k2.5 (~?B)   MCC=0.489  (Matthews Correlation Coefficient — closer to 1 is better) ║
+  ║   ⚡  Fastest              qwen3.5:397b (~397B)   avg=165.9s  p95=230.1s                                    ║
+  ║   ✅  Fewest hallucinations gpt-oss:120b (~120B)   15 false positives                                       ║
+  ║   🔍  Fewest missed issues kimi-k2.5 (~?B)   116 false negatives                                           ║
+  ║   🎲  Most consistent      qwen3.5:397b (~397B)   F1 σ=0.048                                               ║
+  ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ③ EXTENDED METRICS  (confusion-matrix detail)  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  TP = correctly found issues  ·  TN = correctly skipped non-issues  ·  FP = hallucinations  ·  FN = missed issues
+  Acc = overall accuracy  ·  BalAcc = (TPR+TNR)/2  ·  MCC = Matthews Correlation Coefficient (−1 worst · 0 random · +1 perfect)
+  Specif = specificity = TN/(TN+FP) i.e. how well the model avoids hallucinations  ·  NPV = TN/(TN+FN) i.e. how reliable a "no issue" verdict is
+
+       Model                                Acc   BalAcc     MCC   Specif     NPV    TP     TN    FP    FN
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    🥇 qwen3.5:397b (~397B)               81.6%    65.6%   0.448    97.3%   81.9%    68    599    17   133
+    🥈 kimi-k2.5 (~?B)                    82.6%    69.0%   0.489    95.8%   83.9%    85    599    28   116
+    🥉 gpt-oss:120b (~120B)               77.6%    57.4%   0.205    97.7%   78.4%    34    599    15   167
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ④ RESPONSE TIME  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Avg / Median (p50) / 95th-percentile across all successful runs
+
+       Model                                  Avg       p50       p95  Issues/run
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    1. qwen3.5:397b (~397B)                165.9s    151.3s    230.1s        21.3 ▓▓▓▓▓░░░░░░░
+    2. gpt-oss:120b (~120B)                332.5s    350.7s    565.1s        12.3 ▓▓▓▓▓▓▓▓▓░░░
+    3. kimi-k2.5 (~?B)                     423.5s    403.2s    537.6s        28.3 ▓▓▓▓▓▓▓▓▓▓▓▓
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑤ DETAIL BY FIXTURE  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  html-high  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  kimi-k2.5 (~?B)                     24    23   149     1    28    61.3%   85.6%    0.60    449.5s  TP:23✓  TN:149✓  FP(hallucinated): "Fieldset missing legend"  FN(missed): [search-label-missing, logo-bar-aria-label, features-heading-id, step1-heading-skip, filter-btn-aria-pressed, pricing-toggle-role, table-caption-missing, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  qwen3.5:397b (~397B)                16    15   149     1    36    44.8%   81.6%    0.46    239.0s  TP:15✓  TN:149✓  FP(hallucinated): "Fieldset missing legend"  FN(missed): [html-lang-missing, footer-logo-alt-missing, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, table-caption-missing, th-row-scope-missing, testimonial-avatar-alt, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  gpt-oss:120b (~120B)                 0     0   149     0    51     0.0%   74.5%    0.00    558.1s  TP:0✓  TN:149✓  FN(missed): [html-lang-missing, search-btn-name, click-here-link, heading-level-skip-h5, axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+
+  css-high  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  kimi-k2.5 (~?B)                     47    27   150    20    23    55.7%   80.5%    0.43    553.2s  TP:27✓  TN:150✓  FP(hallucinated): "Focus indicator removed on footer navigation links without replacement", "Motion animation on hero image missing prefers-reduced-motion override" +18 more  FN(missed): [negative-word-spacing, forced-colors-outline, mobile-trigger-small, mobile-toggle-small, icon-btn-target-small, close-btn-target-small, input-target-small, visually-hidden-display, skip-link-target-small, contact-input-small, forced-color-adjust, hero-link-outline-none, stat-item-small, testimonial-outline-none, pagination-small, footer-text-contrast, dropdown-outline-none, modal-btn-outline-none, faq-dt-outline-none, form-input-outline-none, checkbox-outline-none, footer-nav-outline, social-link-outline]
+  qwen3.5:397b (~397B)                33    22   150    11    28    53.0%   81.5%    0.44    179.6s  TP:22✓  TN:150✓  FP(hallucinated): "Focus indicator removed without replacement on .table-wrapper:focus-visible", "Focus indicator removed without replacement on .faq-item dt button:focus-visible" +9 more  FN(missed): [font-size-px, skip-link-transform, negative-word-spacing, forced-colors-outline, mobile-toggle-small, icon-btn-target-small, close-btn-target-small, input-target-small, visually-hidden-display, skip-link-target-small, contact-input-small, brand-secondary-contrast, neutral-900-contrast, error-colour-contrast, forced-color-adjust, hero-link-outline-none, badge-outline-none, stat-item-small, testimonial-outline-none, pagination-small, footer-text-contrast, dropdown-outline-none, modal-btn-outline-none, faq-dt-outline-none, form-input-outline-none, footer-nav-outline, social-link-small-h, social-link-outline]
+  gpt-oss:120b (~120B)                 0     0   150     0    50     0.0%   75.0%    0.00    566.4s  TP:0✓  TN:150✓  FN(missed): [secondary-text-contrast, focus-ring-contrast, font-size-px, line-height-tight, base-focus-outline-none, sr-only-broken, reduced-motion-missing, button-target-small, btn-primary-outline-none, skip-link-transform, brand-primary-contrast, negative-word-spacing, link-no-underline, forced-colors-outline, mobile-trigger-small, mobile-toggle-small, icon-btn-target-small, close-btn-target-small, nav-item-outline-none, search-btn-target-small, input-target-small, card-btn-outline-none, tab-outline-none, visually-hidden-display, skip-link-target-small, pricing-btn-outline-none, faq-btn-target-small-m, form-btn-outline-none, newsletter-input-small, contact-input-small, brand-secondary-contrast, neutral-900-contrast, error-colour-contrast, forced-color-adjust, hero-link-outline-none, badge-outline-none, stat-item-small, testimonial-outline-none, pagination-small, footer-text-contrast, social-icon-small, dropdown-outline-none, modal-btn-outline-none, faq-dt-outline-none, form-input-outline-none, checkbox-outline-none, footer-brand-outline, footer-nav-outline, social-link-small-h, social-link-outline]
+
+  js-high  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  qwen3.5:397b (~397B)                14    13   150     1    37    40.6%   81.1%    0.43    123.0s  TP:13✓  TN:150✓  FP(hallucinated): "productFilter applyFilters does not announce count change"  FN(missed): [nav-focus-trap, filter-aria-pressed, mark-valid-aria, nav-close-expanded, dropdown-close-expanded, scroll-top-announce, scroll-btn-hidden, search-submit-announce, search-clear-announce, filter-result-announce, view-mode-announce, filter-reset-announce, billing-period-announce, comparison-expand-announce, scroll-to-plan-announce, faq-open-announce, faq-open-all-announce, faq-close-all-announce, shortcut-search-announce, nav-open-announce, dropdown-close-focus, dropdown-register-expanded, scroll-btn-show-hidden, scroll-btn-hide-hidden, breadcrumb-current, breadcrumb-separator, shortcut-nav-announce, shortcut-main-announce, shortcut-footer-announce, suggestions-aria-selected, suggestions-show-expanded2, suggestions-hide-expanded, suggestion-navigate-announce, card-reduced-hidden, pagination-aria-label, pricing-aria-selected, comparison-col-selected]
+  kimi-k2.5 (~?B)                     12    11   150     1    39    35.5%   80.1%    0.39    356.9s  TP:11✓  TN:150✓  FP(hallucinated): "faqAccordion expand/collapse not announced via live region"  FN(missed): [nav-focus-trap, filter-aria-pressed, nav-close-expanded, nav-init-expanded, dropdown-close-expanded, scroll-top-announce, scroll-btn-hidden, search-submit-announce, search-clear-announce, filter-result-announce, view-mode-announce, filter-reset-announce, billing-period-announce, comparison-expand-announce, scroll-to-plan-announce, faq-open-announce, faq-open-all-announce, faq-close-all-announce, shortcut-search-announce, combobox-expanded, nav-open-announce, dropdown-close-focus, dropdown-register-expanded, scroll-btn-show-hidden, scroll-btn-hide-hidden, breadcrumb-current, breadcrumb-separator, shortcut-nav-announce, shortcut-main-announce, shortcut-footer-announce, suggestions-show-expanded, suggestions-aria-selected, suggestions-show-expanded2, suggestions-hide-expanded, suggestion-navigate-announce, card-reduced-hidden, pagination-aria-label, pricing-aria-selected, comparison-col-selected]
+  gpt-oss:120b (~120B)                 9     9   150     0    41    30.5%   79.5%    0.38     62.4s  TP:9✓  TN:150✓  FN(missed): [nav-focus-trap, faq-open-expanded, nav-close-expanded, nav-init-expanded, nav-init-controls, dropdown-close-expanded, scroll-top-announce, scroll-btn-hidden, search-submit-announce, search-clear-announce, filter-result-announce, view-mode-announce, filter-reset-announce, billing-period-announce, comparison-expand-announce, scroll-to-plan-announce, faq-open-announce, faq-open-all-announce, faq-close-all-announce, shortcut-search-announce, combobox-expanded, nav-open-announce, dropdown-close-focus, dropdown-register-expanded, scroll-btn-show-hidden, scroll-btn-hide-hidden, breadcrumb-current, breadcrumb-separator, shortcut-nav-announce, shortcut-main-announce, shortcut-footer-announce, suggestions-show-expanded, suggestions-aria-selected, suggestions-show-expanded2, suggestions-hide-expanded, suggestion-navigate-announce, card-reduced-hidden, pagination-aria-label, pricing-aria-selected, pricing-aria-checked, comparison-col-selected]
+
+  tsx-high  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  kimi-k2.5 (~?B)                     30    24   150     6    26    60.0%   84.5%    0.54    334.3s  TP:24✓  TN:150✓  FP(hallucinated): "FilterTabs fifth button missing aria-pressed", "BillingToggle monthly button missing aria-pressed" +4 more  FN(missed): [newsletter-aria-required, hamburger-expanded, hero-ctas-label, hero-trust-label, stat-value-label, stats-bar-labelledby, plan-card-label, plan-article-labelledby, plan-cta-label, star-rating-role, spinner-icon-hidden, spinner-ring-hidden, error-msg-role, form-label-for, required-marker-hidden, select-aria-invalid, section-labelledby, nav-chevron-hidden, nav-submenu-labelledby, desktop-nav-label, mobile-backdrop-hidden, mobile-nav-body-label, theme-toggle-label, search-form-role, account-actions-label, hero-overlay-hidden]
+  gpt-oss:120b (~120B)                40    25   150    15    25    55.6%   81.4%    0.44    143.2s  TP:25✓  TN:150✓  FP(hallucinated): "MobileNav close IconButton missing aria‑label", "StatsBar <section> missing aria‑labelledby" +13 more  FN(missed): [billing-annual-pressed, mobile-nav-modal, hamburger-expanded, hero-ctas-label, hero-trust-label, stat-value-label, stats-bar-labelledby, integrations-clone-hidden, plan-card-label, plan-cta-label, star-rating-role, button-aria-busy, error-msg-role, select-aria-invalid, section-labelledby, nav-chevron-hidden, nav-submenu-labelledby, desktop-nav-label, mobile-backdrop-hidden, mobile-close-label, mobile-nav-body-label, theme-toggle-label, search-form-role, account-actions-label, hero-overlay-hidden]
+  qwen3.5:397b (~397B)                22    18   150     4    32    50.0%   82.4%    0.46    122.2s  TP:18✓  TN:150✓  FP(hallucinated): "ThemeToggle icon button missing accessible name", "PlanCard article missing accessible name" +2 more  FN(missed): [textinput-aria-invalid, billing-monthly-pressed, billing-annual-pressed, newsletter-aria-required, textarea-aria-invalid, checkbox-aria-invalid, mobile-nav-modal, mobile-section-expanded, hamburger-expanded, hero-ctas-label, hero-trust-label, stat-value-label, integrations-clone-hidden, plan-card-label, plan-article-labelledby, star-rating-role, star-inner-hidden, spinner-icon-hidden, spinner-ring-hidden, error-msg-role, form-label-for, required-marker-hidden, select-aria-invalid, section-labelledby, nav-chevron-hidden, nav-submenu-labelledby, mobile-backdrop-hidden, mobile-nav-body-label, theme-toggle-label, search-form-role, account-actions-label, hero-overlay-hidden]
+
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░  ⑥ FALSE POSITIVE ANALYSIS  (hallucinations on clean files)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Every issue listed below was found by the model on a fixture that has NO real accessibility problems.
+  These are hallucinations — the model invented problems that don't exist.
+
+  ✖  gpt-oss:120b (~120B)  15 hallucinations
+      [tsx-high]  "MobileNav close IconButton missing aria‑label"
+      [tsx-high]  "StatsBar <section> missing aria‑labelledby"
+      [tsx-high]  "Mobile navigation <nav> missing aria‑label"
+      [tsx-high]  "Pricing plan article missing aria‑labelledby (Pro plan)"
+      [tsx-high]  "Pricing plan article missing aria‑labelledby (Enterprise plan)"
+      [tsx-high]  "Contact form fields missing aria‑invalid when in error state (Message)"
+      [tsx-high]  "Contact form fields broken aria‑describedby (Full name)"
+      [tsx-high]  "Contact form fields broken aria‑describedby (Email address)"
+      [tsx-high]  "Contact form fields broken aria‑describedby (Subject)"
+      [tsx-high]  "Contact form fields broken aria‑describedby (Message)"
+      [tsx-high]  "Newsletter form missing associated label"
+      [tsx-high]  "Newsletter form field missing aria‑invalid when in error state"
+      [tsx-high]  "Newsletter form broken aria‑describedby"
+      [tsx-high]  "Mobile navigation active link missing aria‑current"
+      [tsx-high]  "Required‑field asterisk missing aria‑hidden (Newsletter form)"
+  ✖  qwen3.5:397b (~397B)  17 hallucinations
+      [html-high]  "Fieldset missing legend"
+      [css-high]  "Focus indicator removed without replacement on .table-wrapper:focus-visible"
+      [css-high]  "Focus indicator removed without replacement on .faq-item dt button:focus-visible"
+      [css-high]  "Focus indicator removed without replacement on footer[role="contentinfo"] nav a:focus-visible"
+      [css-high]  "Touch target below minimum size: #site-search button[type="submit"]"
+      [css-high]  "Touch target below minimum size: .form-group input[type="checkbox"]"
+      [css-high]  "Motion animation missing prefers-reduced-motion override: .hero-image img"
+      [css-high]  "Insufficient colour contrast: .section-header p"
+      [css-high]  "Insufficient colour contrast: .product-body > p:not(.product-tagline)"
+      [css-high]  "Insufficient colour contrast: .step-content p"
+      [css-high]  "Insufficient colour contrast: .input-hint"
+      [css-high]  "Link underline removed — colour alone distinguishes links from surrounding text"
+      [js-high]  "productFilter applyFilters does not announce count change"
+      [tsx-high]  "ThemeToggle icon button missing accessible name"
+      [tsx-high]  "PlanCard article missing accessible name"
+      [tsx-high]  "Mobile navigation backdrop div missing keyboard accessibility"
+      [tsx-high]  "ProductCard CTA link missing unique accessible name"
+  ✖  kimi-k2.5 (~?B)  28 hallucinations
+      [html-high]  "Fieldset missing legend"
+      [css-high]  "Focus indicator removed on footer navigation links without replacement"
+      [css-high]  "Motion animation on hero image missing prefers-reduced-motion override"
+      [css-high]  "Motion animation on feature cards missing prefers-reduced-motion override"
+      [css-high]  "Motion animation on featured pricing card missing prefers-reduced-motion override"
+      [css-high]  "Insufficient colour contrast on primary button"
+      [css-high]  "Insufficient colour contrast on outline button"
+      [css-high]  "Insufficient colour contrast on ghost button"
+      [css-high]  "Insufficient colour contrast on stat values"
+      [css-high]  "Insufficient colour contrast on stat labels"
+      [css-high]  "Insufficient colour contrast on active filter tab"
+      [css-high]  "Insufficient colour contrast on active pricing toggle"
+      [css-high]  "Insufficient colour contrast on newsletter form labels"
+      [css-high]  "Insufficient colour contrast on input hint text"
+      [css-high]  "Insufficient colour contrast on newsletter input hints"
+      [css-high]  "Insufficient colour contrast on footer address"
+      [css-high]  "Insufficient colour contrast on footer address links"
+      [css-high]  "Insufficient colour contrast on footer navigation links"
+      [css-high]  "Insufficient colour contrast on inline code elements"
+      [css-high]  "Insufficient colour contrast on inline code in steps"
+      [css-high]  "Link underline removed with no alternative on footer navigation"
+      [js-high]  "faqAccordion expand/collapse not announced via live region"
+      [tsx-high]  "FilterTabs fifth button missing aria-pressed"
+      [tsx-high]  "BillingToggle monthly button missing aria-pressed"
+      [tsx-high]  "BillingToggle annual button missing aria-pressed"
+      [tsx-high]  "DesktopNav navigation landmark missing accessible name"
+      [tsx-high]  "StatsBar landmark missing accessible name"
+      [tsx-high]  "PlanCard article missing accessible name"
+
+▐░░░░░░░░░░░░░░░░  ⑦ FALSE NEGATIVE ANALYSIS  (real issues missed on error-present fixtures)  ░░░░░░░░░░░░░░░░░▌
+
+  Every concept ID below was a real accessibility issue that the model failed to find (false negative).
+  Part A ranks concepts by how many models missed them — the higher the bar, the harder the issue.
+  Part B lists per-model breakdowns identical in style to the FP section above.
+
+  html-high
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    search-label-missing                        3/3  100.0%  ████████████████████
+    logo-bar-aria-label                         3/3  100.0%  ████████████████████
+    features-heading-id                         3/3  100.0%  ████████████████████
+    step1-heading-skip                          3/3  100.0%  ████████████████████
+    filter-btn-aria-pressed                     3/3  100.0%  ████████████████████
+    pricing-toggle-role                         3/3  100.0%  ████████████████████
+    table-caption-missing                       3/3  100.0%  ████████████████████
+    contact-label-missing                       3/3  100.0%  ████████████████████
+    main-nav-aria-label                         3/3  100.0%  ████████████████████
+    mobile-toggle-aria                          3/3  100.0%  ████████████████████
+    subnav-btn-aria                             3/3  100.0%  ████████████████████
+    search-form-role                            3/3  100.0%  ████████████████████
+    account-nav-label                           3/3  100.0%  ████████████████████
+    main-id-missing                             3/3  100.0%  ████████████████████
+    live-region-removed                         3/3  100.0%  ████████████████████
+    hero-section-label                          3/3  100.0%  ████████████████████
+    filter-group-label                          3/3  100.0%  ████████████████████
+    product-grid-label                          3/3  100.0%  ████████████████████
+    row-scope-scans                             3/3  100.0%  ████████████████████
+    marcus-avatar-alt                           3/3  100.0%  ████████████████████
+    faq-q1-expanded                             3/3  100.0%  ████████████████████
+    faq-q2-expanded                             3/3  100.0%  ████████████████████
+    contact-aria-required                       3/3  100.0%  ████████████████████
+    contact-msg-describedby                     3/3  100.0%  ████████████████████
+    products-nav-label                          3/3  100.0%  ████████████████████
+    linkedin-link-name                          3/3  100.0%  ████████████████████
+    html-lang-missing                           2/3  66.7%   █████████████░░░░░░░
+    footer-logo-alt-missing                     2/3  66.7%   █████████████░░░░░░░
+    hero-img-alt-missing                        2/3  66.7%   █████████████░░░░░░░
+    partner-logo-alt                            2/3  66.7%   █████████████░░░░░░░
+    learn-more-link                             2/3  66.7%   █████████████░░░░░░░
+    step1-img-alt-missing                       2/3  66.7%   █████████████░░░░░░░
+    contrast-studio-alt                         2/3  66.7%   █████████████░░░░░░░
+    contrast-studio-link                        2/3  66.7%   █████████████░░░░░░░
+    th-row-scope-missing                        2/3  66.7%   █████████████░░░░░░░
+    testimonial-avatar-alt                      2/3  66.7%   █████████████░░░░░░░
+    faq-dd-region                               2/3  66.7%   █████████████░░░░░░░
+    skip-links-removed                          2/3  66.7%   █████████████░░░░░░░
+    search-btn-name                             1/3  33.3%   ███████░░░░░░░░░░░░░
+    click-here-link                             1/3  33.3%   ███████░░░░░░░░░░░░░
+    heading-level-skip-h5                       1/3  33.3%   ███████░░░░░░░░░░░░░
+    axe-runner-alt-missing                      1/3  33.3%   ███████░░░░░░░░░░░░░
+    th-col-scope-missing                        1/3  33.3%   ███████░░░░░░░░░░░░░
+    faq-id-wrong-section                        1/3  33.3%   ███████░░░░░░░░░░░░░
+    newsletter-label-missing                    1/3  33.3%   ███████░░░░░░░░░░░░░
+    twitter-link-name                           1/3  33.3%   ███████░░░░░░░░░░░░░
+    title-empty                                 1/3  33.3%   ███████░░░░░░░░░░░░░
+    featured-plan-label                         1/3  33.3%   ███████░░░░░░░░░░░░░
+    td-icon-aria-label                          1/3  33.3%   ███████░░░░░░░░░░░░░
+    faq-aria-controls                           1/3  33.3%   ███████░░░░░░░░░░░░░
+    contact-name-autocomplete                   1/3  33.3%   ███████░░░░░░░░░░░░░
+
+  css-high
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    negative-word-spacing                       3/3  100.0%  ████████████████████
+    forced-colors-outline                       3/3  100.0%  ████████████████████
+    mobile-toggle-small                         3/3  100.0%  ████████████████████
+    icon-btn-target-small                       3/3  100.0%  ████████████████████
+    close-btn-target-small                      3/3  100.0%  ████████████████████
+    input-target-small                          3/3  100.0%  ████████████████████
+    visually-hidden-display                     3/3  100.0%  ████████████████████
+    skip-link-target-small                      3/3  100.0%  ████████████████████
+    contact-input-small                         3/3  100.0%  ████████████████████
+    forced-color-adjust                         3/3  100.0%  ████████████████████
+    hero-link-outline-none                      3/3  100.0%  ████████████████████
+    stat-item-small                             3/3  100.0%  ████████████████████
+    testimonial-outline-none                    3/3  100.0%  ████████████████████
+    pagination-small                            3/3  100.0%  ████████████████████
+    footer-text-contrast                        3/3  100.0%  ████████████████████
+    dropdown-outline-none                       3/3  100.0%  ████████████████████
+    modal-btn-outline-none                      3/3  100.0%  ████████████████████
+    faq-dt-outline-none                         3/3  100.0%  ████████████████████
+    form-input-outline-none                     3/3  100.0%  ████████████████████
+    footer-nav-outline                          3/3  100.0%  ████████████████████
+    social-link-outline                         3/3  100.0%  ████████████████████
+    font-size-px                                2/3  66.7%   █████████████░░░░░░░
+    skip-link-transform                         2/3  66.7%   █████████████░░░░░░░
+    mobile-trigger-small                        2/3  66.7%   █████████████░░░░░░░
+    brand-secondary-contrast                    2/3  66.7%   █████████████░░░░░░░
+    neutral-900-contrast                        2/3  66.7%   █████████████░░░░░░░
+    error-colour-contrast                       2/3  66.7%   █████████████░░░░░░░
+    badge-outline-none                          2/3  66.7%   █████████████░░░░░░░
+    checkbox-outline-none                       2/3  66.7%   █████████████░░░░░░░
+    social-link-small-h                         2/3  66.7%   █████████████░░░░░░░
+    secondary-text-contrast                     1/3  33.3%   ███████░░░░░░░░░░░░░
+    focus-ring-contrast                         1/3  33.3%   ███████░░░░░░░░░░░░░
+    line-height-tight                           1/3  33.3%   ███████░░░░░░░░░░░░░
+    base-focus-outline-none                     1/3  33.3%   ███████░░░░░░░░░░░░░
+    sr-only-broken                              1/3  33.3%   ███████░░░░░░░░░░░░░
+    reduced-motion-missing                      1/3  33.3%   ███████░░░░░░░░░░░░░
+    button-target-small                         1/3  33.3%   ███████░░░░░░░░░░░░░
+    btn-primary-outline-none                    1/3  33.3%   ███████░░░░░░░░░░░░░
+    brand-primary-contrast                      1/3  33.3%   ███████░░░░░░░░░░░░░
+    link-no-underline                           1/3  33.3%   ███████░░░░░░░░░░░░░
+    nav-item-outline-none                       1/3  33.3%   ███████░░░░░░░░░░░░░
+    search-btn-target-small                     1/3  33.3%   ███████░░░░░░░░░░░░░
+    card-btn-outline-none                       1/3  33.3%   ███████░░░░░░░░░░░░░
+    tab-outline-none                            1/3  33.3%   ███████░░░░░░░░░░░░░
+    pricing-btn-outline-none                    1/3  33.3%   ███████░░░░░░░░░░░░░
+    faq-btn-target-small-m                      1/3  33.3%   ███████░░░░░░░░░░░░░
+    form-btn-outline-none                       1/3  33.3%   ███████░░░░░░░░░░░░░
+    newsletter-input-small                      1/3  33.3%   ███████░░░░░░░░░░░░░
+    social-icon-small                           1/3  33.3%   ███████░░░░░░░░░░░░░
+    footer-brand-outline                        1/3  33.3%   ███████░░░░░░░░░░░░░
+
+  js-high
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    nav-focus-trap                              3/3  100.0%  ████████████████████
+    nav-close-expanded                          3/3  100.0%  ████████████████████
+    dropdown-close-expanded                     3/3  100.0%  ████████████████████
+    scroll-top-announce                         3/3  100.0%  ████████████████████
+    scroll-btn-hidden                           3/3  100.0%  ████████████████████
+    search-submit-announce                      3/3  100.0%  ████████████████████
+    search-clear-announce                       3/3  100.0%  ████████████████████
+    filter-result-announce                      3/3  100.0%  ████████████████████
+    view-mode-announce                          3/3  100.0%  ████████████████████
+    filter-reset-announce                       3/3  100.0%  ████████████████████
+    billing-period-announce                     3/3  100.0%  ████████████████████
+    comparison-expand-announce                  3/3  100.0%  ████████████████████
+    scroll-to-plan-announce                     3/3  100.0%  ████████████████████
+    faq-open-announce                           3/3  100.0%  ████████████████████
+    faq-open-all-announce                       3/3  100.0%  ████████████████████
+    faq-close-all-announce                      3/3  100.0%  ████████████████████
+    shortcut-search-announce                    3/3  100.0%  ████████████████████
+    nav-open-announce                           3/3  100.0%  ████████████████████
+    dropdown-close-focus                        3/3  100.0%  ████████████████████
+    dropdown-register-expanded                  3/3  100.0%  ████████████████████
+    scroll-btn-show-hidden                      3/3  100.0%  ████████████████████
+    scroll-btn-hide-hidden                      3/3  100.0%  ████████████████████
+    breadcrumb-current                          3/3  100.0%  ████████████████████
+    breadcrumb-separator                        3/3  100.0%  ████████████████████
+    shortcut-nav-announce                       3/3  100.0%  ████████████████████
+    shortcut-main-announce                      3/3  100.0%  ████████████████████
+    shortcut-footer-announce                    3/3  100.0%  ████████████████████
+    suggestions-aria-selected                   3/3  100.0%  ████████████████████
+    suggestions-show-expanded2                  3/3  100.0%  ████████████████████
+    suggestions-hide-expanded                   3/3  100.0%  ████████████████████
+    suggestion-navigate-announce                3/3  100.0%  ████████████████████
+    card-reduced-hidden                         3/3  100.0%  ████████████████████
+    pagination-aria-label                       3/3  100.0%  ████████████████████
+    pricing-aria-selected                       3/3  100.0%  ████████████████████
+    comparison-col-selected                     3/3  100.0%  ████████████████████
+    nav-init-expanded                           2/3  66.7%   █████████████░░░░░░░
+    combobox-expanded                           2/3  66.7%   █████████████░░░░░░░
+    suggestions-show-expanded                   2/3  66.7%   █████████████░░░░░░░
+    filter-aria-pressed                         2/3  66.7%   █████████████░░░░░░░
+    faq-open-expanded                           1/3  33.3%   ███████░░░░░░░░░░░░░
+    nav-init-controls                           1/3  33.3%   ███████░░░░░░░░░░░░░
+    pricing-aria-checked                        1/3  33.3%   ███████░░░░░░░░░░░░░
+    mark-valid-aria                             1/3  33.3%   ███████░░░░░░░░░░░░░
+
+  tsx-high
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    hamburger-expanded                          3/3  100.0%  ████████████████████
+    hero-ctas-label                             3/3  100.0%  ████████████████████
+    hero-trust-label                            3/3  100.0%  ████████████████████
+    stat-value-label                            3/3  100.0%  ████████████████████
+    plan-card-label                             3/3  100.0%  ████████████████████
+    star-rating-role                            3/3  100.0%  ████████████████████
+    error-msg-role                              3/3  100.0%  ████████████████████
+    select-aria-invalid                         3/3  100.0%  ████████████████████
+    section-labelledby                          3/3  100.0%  ████████████████████
+    nav-chevron-hidden                          3/3  100.0%  ████████████████████
+    nav-submenu-labelledby                      3/3  100.0%  ████████████████████
+    mobile-backdrop-hidden                      3/3  100.0%  ████████████████████
+    mobile-nav-body-label                       3/3  100.0%  ████████████████████
+    theme-toggle-label                          3/3  100.0%  ████████████████████
+    search-form-role                            3/3  100.0%  ████████████████████
+    account-actions-label                       3/3  100.0%  ████████████████████
+    hero-overlay-hidden                         3/3  100.0%  ████████████████████
+    billing-annual-pressed                      2/3  66.7%   █████████████░░░░░░░
+    mobile-nav-modal                            2/3  66.7%   █████████████░░░░░░░
+    stats-bar-labelledby                        2/3  66.7%   █████████████░░░░░░░
+    integrations-clone-hidden                   2/3  66.7%   █████████████░░░░░░░
+    plan-cta-label                              2/3  66.7%   █████████████░░░░░░░
+    desktop-nav-label                           2/3  66.7%   █████████████░░░░░░░
+    newsletter-aria-required                    2/3  66.7%   █████████████░░░░░░░
+    plan-article-labelledby                     2/3  66.7%   █████████████░░░░░░░
+    spinner-icon-hidden                         2/3  66.7%   █████████████░░░░░░░
+    spinner-ring-hidden                         2/3  66.7%   █████████████░░░░░░░
+    form-label-for                              2/3  66.7%   █████████████░░░░░░░
+    required-marker-hidden                      2/3  66.7%   █████████████░░░░░░░
+    button-aria-busy                            1/3  33.3%   ███████░░░░░░░░░░░░░
+    mobile-close-label                          1/3  33.3%   ███████░░░░░░░░░░░░░
+    textinput-aria-invalid                      1/3  33.3%   ███████░░░░░░░░░░░░░
+    billing-monthly-pressed                     1/3  33.3%   ███████░░░░░░░░░░░░░
+    textarea-aria-invalid                       1/3  33.3%   ███████░░░░░░░░░░░░░
+    checkbox-aria-invalid                       1/3  33.3%   ███████░░░░░░░░░░░░░
+    mobile-section-expanded                     1/3  33.3%   ███████░░░░░░░░░░░░░
+    star-inner-hidden                           1/3  33.3%   ███████░░░░░░░░░░░░░
+
+───────────────────────────────────────────────── per model ──────────────────────────────────────────────────
+
+  ✖  gpt-oss:120b (~120B)  167 missed issues
+      [html-high]  html-lang-missing
+      [html-high]  search-btn-name
+      [html-high]  click-here-link
+      [html-high]  heading-level-skip-h5
+      [html-high]  axe-runner-alt-missing
+      [html-high]  th-col-scope-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+      [css-high]  secondary-text-contrast
+      [css-high]  focus-ring-contrast
+      [css-high]  font-size-px
+      [css-high]  line-height-tight
+      [css-high]  base-focus-outline-none
+      [css-high]  sr-only-broken
+      [css-high]  reduced-motion-missing
+      [css-high]  button-target-small
+      [css-high]  btn-primary-outline-none
+      [css-high]  skip-link-transform
+      [css-high]  brand-primary-contrast
+      [css-high]  negative-word-spacing
+      [css-high]  link-no-underline
+      [css-high]  forced-colors-outline
+      [css-high]  mobile-trigger-small
+      [css-high]  mobile-toggle-small
+      [css-high]  icon-btn-target-small
+      [css-high]  close-btn-target-small
+      [css-high]  nav-item-outline-none
+      [css-high]  search-btn-target-small
+      [css-high]  input-target-small
+      [css-high]  card-btn-outline-none
+      [css-high]  tab-outline-none
+      [css-high]  visually-hidden-display
+      [css-high]  skip-link-target-small
+      [css-high]  pricing-btn-outline-none
+      [css-high]  faq-btn-target-small-m
+      [css-high]  form-btn-outline-none
+      [css-high]  newsletter-input-small
+      [css-high]  contact-input-small
+      [css-high]  brand-secondary-contrast
+      [css-high]  neutral-900-contrast
+      [css-high]  error-colour-contrast
+      [css-high]  forced-color-adjust
+      [css-high]  hero-link-outline-none
+      [css-high]  badge-outline-none
+      [css-high]  stat-item-small
+      [css-high]  testimonial-outline-none
+      [css-high]  pagination-small
+      [css-high]  footer-text-contrast
+      [css-high]  social-icon-small
+      [css-high]  dropdown-outline-none
+      [css-high]  modal-btn-outline-none
+      [css-high]  faq-dt-outline-none
+      [css-high]  form-input-outline-none
+      [css-high]  checkbox-outline-none
+      [css-high]  footer-brand-outline
+      [css-high]  footer-nav-outline
+      [css-high]  social-link-small-h
+      [css-high]  social-link-outline
+      [js-high]  nav-focus-trap
+      [js-high]  faq-open-expanded
+      [js-high]  nav-close-expanded
+      [js-high]  nav-init-expanded
+      [js-high]  nav-init-controls
+      [js-high]  dropdown-close-expanded
+      [js-high]  scroll-top-announce
+      [js-high]  scroll-btn-hidden
+      [js-high]  search-submit-announce
+      [js-high]  search-clear-announce
+      [js-high]  filter-result-announce
+      [js-high]  view-mode-announce
+      [js-high]  filter-reset-announce
+      [js-high]  billing-period-announce
+      [js-high]  comparison-expand-announce
+      [js-high]  scroll-to-plan-announce
+      [js-high]  faq-open-announce
+      [js-high]  faq-open-all-announce
+      [js-high]  faq-close-all-announce
+      [js-high]  shortcut-search-announce
+      [js-high]  combobox-expanded
+      [js-high]  nav-open-announce
+      [js-high]  dropdown-close-focus
+      [js-high]  dropdown-register-expanded
+      [js-high]  scroll-btn-show-hidden
+      [js-high]  scroll-btn-hide-hidden
+      [js-high]  breadcrumb-current
+      [js-high]  breadcrumb-separator
+      [js-high]  shortcut-nav-announce
+      [js-high]  shortcut-main-announce
+      [js-high]  shortcut-footer-announce
+      [js-high]  suggestions-show-expanded
+      [js-high]  suggestions-aria-selected
+      [js-high]  suggestions-show-expanded2
+      [js-high]  suggestions-hide-expanded
+      [js-high]  suggestion-navigate-announce
+      [js-high]  card-reduced-hidden
+      [js-high]  pagination-aria-label
+      [js-high]  pricing-aria-selected
+      [js-high]  pricing-aria-checked
+      [js-high]  comparison-col-selected
+      [tsx-high]  billing-annual-pressed
+      [tsx-high]  mobile-nav-modal
+      [tsx-high]  hamburger-expanded
+      [tsx-high]  hero-ctas-label
+      [tsx-high]  hero-trust-label
+      [tsx-high]  stat-value-label
+      [tsx-high]  stats-bar-labelledby
+      [tsx-high]  integrations-clone-hidden
+      [tsx-high]  plan-card-label
+      [tsx-high]  plan-cta-label
+      [tsx-high]  star-rating-role
+      [tsx-high]  button-aria-busy
+      [tsx-high]  error-msg-role
+      [tsx-high]  select-aria-invalid
+      [tsx-high]  section-labelledby
+      [tsx-high]  nav-chevron-hidden
+      [tsx-high]  nav-submenu-labelledby
+      [tsx-high]  desktop-nav-label
+      [tsx-high]  mobile-backdrop-hidden
+      [tsx-high]  mobile-close-label
+      [tsx-high]  mobile-nav-body-label
+      [tsx-high]  theme-toggle-label
+      [tsx-high]  search-form-role
+      [tsx-high]  account-actions-label
+      [tsx-high]  hero-overlay-hidden
+  ✖  qwen3.5:397b (~397B)  133 missed issues
+      [html-high]  html-lang-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  testimonial-avatar-alt
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+      [css-high]  font-size-px
+      [css-high]  skip-link-transform
+      [css-high]  negative-word-spacing
+      [css-high]  forced-colors-outline
+      [css-high]  mobile-toggle-small
+      [css-high]  icon-btn-target-small
+      [css-high]  close-btn-target-small
+      [css-high]  input-target-small
+      [css-high]  visually-hidden-display
+      [css-high]  skip-link-target-small
+      [css-high]  contact-input-small
+      [css-high]  brand-secondary-contrast
+      [css-high]  neutral-900-contrast
+      [css-high]  error-colour-contrast
+      [css-high]  forced-color-adjust
+      [css-high]  hero-link-outline-none
+      [css-high]  badge-outline-none
+      [css-high]  stat-item-small
+      [css-high]  testimonial-outline-none
+      [css-high]  pagination-small
+      [css-high]  footer-text-contrast
+      [css-high]  dropdown-outline-none
+      [css-high]  modal-btn-outline-none
+      [css-high]  faq-dt-outline-none
+      [css-high]  form-input-outline-none
+      [css-high]  footer-nav-outline
+      [css-high]  social-link-small-h
+      [css-high]  social-link-outline
+      [js-high]  nav-focus-trap
+      [js-high]  filter-aria-pressed
+      [js-high]  mark-valid-aria
+      [js-high]  nav-close-expanded
+      [js-high]  dropdown-close-expanded
+      [js-high]  scroll-top-announce
+      [js-high]  scroll-btn-hidden
+      [js-high]  search-submit-announce
+      [js-high]  search-clear-announce
+      [js-high]  filter-result-announce
+      [js-high]  view-mode-announce
+      [js-high]  filter-reset-announce
+      [js-high]  billing-period-announce
+      [js-high]  comparison-expand-announce
+      [js-high]  scroll-to-plan-announce
+      [js-high]  faq-open-announce
+      [js-high]  faq-open-all-announce
+      [js-high]  faq-close-all-announce
+      [js-high]  shortcut-search-announce
+      [js-high]  nav-open-announce
+      [js-high]  dropdown-close-focus
+      [js-high]  dropdown-register-expanded
+      [js-high]  scroll-btn-show-hidden
+      [js-high]  scroll-btn-hide-hidden
+      [js-high]  breadcrumb-current
+      [js-high]  breadcrumb-separator
+      [js-high]  shortcut-nav-announce
+      [js-high]  shortcut-main-announce
+      [js-high]  shortcut-footer-announce
+      [js-high]  suggestions-aria-selected
+      [js-high]  suggestions-show-expanded2
+      [js-high]  suggestions-hide-expanded
+      [js-high]  suggestion-navigate-announce
+      [js-high]  card-reduced-hidden
+      [js-high]  pagination-aria-label
+      [js-high]  pricing-aria-selected
+      [js-high]  comparison-col-selected
+      [tsx-high]  textinput-aria-invalid
+      [tsx-high]  billing-monthly-pressed
+      [tsx-high]  billing-annual-pressed
+      [tsx-high]  newsletter-aria-required
+      [tsx-high]  textarea-aria-invalid
+      [tsx-high]  checkbox-aria-invalid
+      [tsx-high]  mobile-nav-modal
+      [tsx-high]  mobile-section-expanded
+      [tsx-high]  hamburger-expanded
+      [tsx-high]  hero-ctas-label
+      [tsx-high]  hero-trust-label
+      [tsx-high]  stat-value-label
+      [tsx-high]  integrations-clone-hidden
+      [tsx-high]  plan-card-label
+      [tsx-high]  plan-article-labelledby
+      [tsx-high]  star-rating-role
+      [tsx-high]  star-inner-hidden
+      [tsx-high]  spinner-icon-hidden
+      [tsx-high]  spinner-ring-hidden
+      [tsx-high]  error-msg-role
+      [tsx-high]  form-label-for
+      [tsx-high]  required-marker-hidden
+      [tsx-high]  select-aria-invalid
+      [tsx-high]  section-labelledby
+      [tsx-high]  nav-chevron-hidden
+      [tsx-high]  nav-submenu-labelledby
+      [tsx-high]  mobile-backdrop-hidden
+      [tsx-high]  mobile-nav-body-label
+      [tsx-high]  theme-toggle-label
+      [tsx-high]  search-form-role
+      [tsx-high]  account-actions-label
+      [tsx-high]  hero-overlay-hidden
+  ✖  kimi-k2.5 (~?B)  116 missed issues
+      [html-high]  search-label-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  features-heading-id
+      [html-high]  step1-heading-skip
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  pricing-toggle-role
+      [html-high]  table-caption-missing
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+      [css-high]  negative-word-spacing
+      [css-high]  forced-colors-outline
+      [css-high]  mobile-trigger-small
+      [css-high]  mobile-toggle-small
+      [css-high]  icon-btn-target-small
+      [css-high]  close-btn-target-small
+      [css-high]  input-target-small
+      [css-high]  visually-hidden-display
+      [css-high]  skip-link-target-small
+      [css-high]  contact-input-small
+      [css-high]  forced-color-adjust
+      [css-high]  hero-link-outline-none
+      [css-high]  stat-item-small
+      [css-high]  testimonial-outline-none
+      [css-high]  pagination-small
+      [css-high]  footer-text-contrast
+      [css-high]  dropdown-outline-none
+      [css-high]  modal-btn-outline-none
+      [css-high]  faq-dt-outline-none
+      [css-high]  form-input-outline-none
+      [css-high]  checkbox-outline-none
+      [css-high]  footer-nav-outline
+      [css-high]  social-link-outline
+      [js-high]  nav-focus-trap
+      [js-high]  filter-aria-pressed
+      [js-high]  nav-close-expanded
+      [js-high]  nav-init-expanded
+      [js-high]  dropdown-close-expanded
+      [js-high]  scroll-top-announce
+      [js-high]  scroll-btn-hidden
+      [js-high]  search-submit-announce
+      [js-high]  search-clear-announce
+      [js-high]  filter-result-announce
+      [js-high]  view-mode-announce
+      [js-high]  filter-reset-announce
+      [js-high]  billing-period-announce
+      [js-high]  comparison-expand-announce
+      [js-high]  scroll-to-plan-announce
+      [js-high]  faq-open-announce
+      [js-high]  faq-open-all-announce
+      [js-high]  faq-close-all-announce
+      [js-high]  shortcut-search-announce
+      [js-high]  combobox-expanded
+      [js-high]  nav-open-announce
+      [js-high]  dropdown-close-focus
+      [js-high]  dropdown-register-expanded
+      [js-high]  scroll-btn-show-hidden
+      [js-high]  scroll-btn-hide-hidden
+      [js-high]  breadcrumb-current
+      [js-high]  breadcrumb-separator
+      [js-high]  shortcut-nav-announce
+      [js-high]  shortcut-main-announce
+      [js-high]  shortcut-footer-announce
+      [js-high]  suggestions-show-expanded
+      [js-high]  suggestions-aria-selected
+      [js-high]  suggestions-show-expanded2
+      [js-high]  suggestions-hide-expanded
+      [js-high]  suggestion-navigate-announce
+      [js-high]  card-reduced-hidden
+      [js-high]  pagination-aria-label
+      [js-high]  pricing-aria-selected
+      [js-high]  comparison-col-selected
+      [tsx-high]  newsletter-aria-required
+      [tsx-high]  hamburger-expanded
+      [tsx-high]  hero-ctas-label
+      [tsx-high]  hero-trust-label
+      [tsx-high]  stat-value-label
+      [tsx-high]  stats-bar-labelledby
+      [tsx-high]  plan-card-label
+      [tsx-high]  plan-article-labelledby
+      [tsx-high]  plan-cta-label
+      [tsx-high]  star-rating-role
+      [tsx-high]  spinner-icon-hidden
+      [tsx-high]  spinner-ring-hidden
+      [tsx-high]  error-msg-role
+      [tsx-high]  form-label-for
+      [tsx-high]  required-marker-hidden
+      [tsx-high]  select-aria-invalid
+      [tsx-high]  section-labelledby
+      [tsx-high]  nav-chevron-hidden
+      [tsx-high]  nav-submenu-labelledby
+      [tsx-high]  desktop-nav-label
+      [tsx-high]  mobile-backdrop-hidden
+      [tsx-high]  mobile-nav-body-label
+      [tsx-high]  theme-toggle-label
+      [tsx-high]  search-form-role
+      [tsx-high]  account-actions-label
+      [tsx-high]  hero-overlay-hidden
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑧ COMPLEXITY REGRESSION ANALYSIS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Measures how model performance degrades as code complexity increases.
+  Lower degradation slope = more robust model. Graceful degradation preferred over cliff drops.
+
+  Rank Model                     F1(Low) F1(Med) F1(High) Degradation Robustness
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+
+  Interpretation: Slope = (F1_low - F1_high) / F1_low. Lower slope = graceful degradation. 0% = no degradation, 100% = complete failure on complex code.
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑩ STREAMING QUALITY ANALYSIS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Measures how model quality evolves as partial responses are generated.
+  Early-stopping is viable if F1 plateaus before 100% token count.
+
+  Rank Model                      F1@25%  F1@50%  F1@75% F1@100%    Plateau
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+    1. gpt-oss:120b (~120B)        14.3%   26.4%   40.7%   21.5%        50%
+    2. qwen3.5:397b (~397B)        21.1%   38.4%   46.4%   47.1%        75%
+    3. kimi-k2.5 (~?B)             20.9%   36.5%   48.8%   53.1%        75%
+
+  Plateau = earliest % of tokens where F1 reaches 90% of final value.
+  Green = early plateau (early stopping possible).
+  Yellow = full response needed for optimal quality.
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░  ⑪ PARETO FRONTIER ANALYSIS  (Quality vs. Latency Tradeoff)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Identifies optimal models on the F1 vs. latency tradeoff curve.
+  Pareto-optimal models have no competitor that is both faster AND more accurate.
+
+  Rank Model                          F1   Latency          Status
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+    1. qwen3.5:397b (~397B)        47.1%    165.9s ⭐ PARETO-OPTIMAL
+    2. kimi-k2.5 (~?B)             53.1%    423.5s ⭐ PARETO-OPTIMAL
+·····················································    ·····················································
+    3. gpt-oss:120b (~120B)        21.5%    332.5s Dominated by qwen3.5:397b (~397B)
+
+  ASCII scatter: F1 (vertical) vs. Latency (horizontal)
+  Pareto optimal models marked with ●, others with ○
+
+  0.58                                                              
+  0.55                                                              
+  0.53                                                        ●     
+  0.50                                                              
+  0.47                       ●                                      
+  0.44                                                              
+  0.41                                                              
+  0.39                                                              
+  0.36                                                              
+  0.33                                                              
+  0.30                                                              
+  0.28                                                              
+  0.25                                            ○                 
+  0.22                                                              
+  0.19                                                              
+  0.00  ────────────────────────────────────────────────────────────
+        0ms                                             465814ms
+
+  Conclusion: 2 models on Pareto frontier.
+  Choose based on your needs: faster models (left) or more accurate (top).
+
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+▐░░░░░░░░░░░░░░░░░░░░░░░  ⑫ ADVERSARIAL BLIND SPOTS  (Step 6: Vulnerability Analysis)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Each model's known weak spots:
+
+                      ModelCritical   Weak    Good    
+  ───────────────────────────────────────────────────────
+  gpt-oss:120b (~120B)     0          0       0       
+  qwen3.5:397b (~397B)     0          0       0       
+  kimi-k2.5 (~?B)          0          0       0       
+
+  Critical blind spots (< 25% detection):
+
+  ✓ No critical blind spots detected across any model.
+  Summary:
+
+  ✓ Most robust model: gpt-oss:120b (~120B)
+    • Catches 0 violation types fully
+
+  ✗ Weakest robustness: kimi-k2.5 (~?B)
+    • Catches 0 violation types fully
+
+  💡 Key insight: No single model perfectly catches all violation types.
+     Combine results or use models in sequence to maximize coverage.
+
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+

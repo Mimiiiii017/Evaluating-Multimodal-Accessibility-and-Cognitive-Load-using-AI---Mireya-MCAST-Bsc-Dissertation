@@ -1,0 +1,444 @@
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Cloud-LLM-Preliminary  ·  Accessibility Auditing Quality                                                    ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Preset   Balanced  (fixed — only model differs)                                                             ║
+║  Models   8                                                                                                  ║
+║  Runs/combo 1                                                                                                ║
+║  Scoring  80% F1  +  20% speed  (higher = better)                                                            ║
+║  Run at   4/26/2026, 4:51:31 PM                                                                              ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ① OVERALL RANKING  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+       Model                              Score                       F1    Prec   Recall   TP   FN   FP  AvgTime  Err
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TP = correctly found issues  ·  FN = missed issues  ·  FP = hallucinated issues  ·  F1 = harmonic mean of Prec & Recall
+
+    🥇 gpt-oss:120b (~120B)               45.2% ███████░░░░░░░░░   37.5%   92.3%    23.5%   12   39    1   202.0s    0
+    🥈 kimi-k2.6                          28.4% █████░░░░░░░░░░░   35.5%  100.0%    21.6%   11   40    0   718.0s    0
+    🥉 devstral-small-2:24b (~24B)        26.0% ████░░░░░░░░░░░░    7.5%  100.0%     3.9%    2   49    0    36.8s    0
+  ············································································································
+    4. qwen3-coder:480b (~480B)           23.1% ████░░░░░░░░░░░░   27.1%  100.0%    15.7%    8   43    0   670.4s    0
+    5. qwen3-coder:30b                     0.0% ░░░░░░░░░░░░░░░░    0.0%    0.0%     0.0%    0   51    0      0ms    1
+    6. phi4-reasoning:14b                  0.0% ░░░░░░░░░░░░░░░░    0.0%    0.0%     0.0%    0   51    0      0ms    1
+    7. gpt-oss:20b                         0.0% ░░░░░░░░░░░░░░░░    0.0%    0.0%     0.0%    0   51    0      0ms    1
+    8. devstral-small-2:24b                0.0% ░░░░░░░░░░░░░░░░    0.0%    0.0%     0.0%    0   51    0      0ms    1
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ② HIGHLIGHTS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  ╔══ HIGHLIGHTS ════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║   🏆  Best overall         gpt-oss:120b (~120B)   composite=45.2%                                          ║
+  ║   🎯  Best F1 (accuracy)   gpt-oss:120b (~120B)   F1=37.5%                                                 ║
+  ║   📊  Best overall Acc     gpt-oss:120b (~120B)   Acc=23.1%                                                ║
+  ║   🔬  Best MCC             devstral-small-2:24b   MCC=0.000  (Matthews Correlation Coefficient — closer to 1 is better) ║
+  ║   ⚡  Fastest              devstral-small-2:24b (~24B)   avg=36.8s  p95=36.8s                               ║
+  ║   ✅  Fewest hallucinations devstral-small-2:24b   0 false positives                                        ║
+  ║   🔍  Fewest missed issues gpt-oss:120b (~120B)   39 false negatives                                       ║
+  ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ③ EXTENDED METRICS  (confusion-matrix detail)  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  TP = correctly found issues  ·  TN = correctly skipped non-issues  ·  FP = hallucinations  ·  FN = missed issues
+  Acc = overall accuracy  ·  BalAcc = (TPR+TNR)/2  ·  MCC = Matthews Correlation Coefficient (−1 worst · 0 random · +1 perfect)
+  Specif = specificity = TN/(TN+FP) i.e. how well the model avoids hallucinations  ·  NPV = TN/(TN+FN) i.e. how reliable a "no issue" verdict is
+
+       Model                                Acc   BalAcc     MCC   Specif     NPV    TP     TN    FP    FN
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    🥇 gpt-oss:120b (~120B)               23.1%    11.8%  -0.243     0.0%    0.0%    12      0     1    39
+    🥈 kimi-k2.6                          21.6%    60.8%   0.000   100.0%    0.0%    11      0     0    40
+    🥉 devstral-small-2:24b (~24B)         3.9%    52.0%   0.000   100.0%    0.0%     2      0     0    49
+    4. qwen3-coder:480b (~480B)           15.7%    57.8%   0.000   100.0%    0.0%     8      0     0    43
+    5. qwen3-coder:30b                     0.0%     0.0%   0.000     0.0%    0.0%     0      0     0    51
+    6. phi4-reasoning:14b                  0.0%     0.0%   0.000     0.0%    0.0%     0      0     0    51
+    7. gpt-oss:20b                         0.0%     0.0%   0.000     0.0%    0.0%     0      0     0    51
+    8. devstral-small-2:24b                0.0%     0.0%   0.000     0.0%    0.0%     0      0     0    51
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ④ RESPONSE TIME  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Avg / Median (p50) / 95th-percentile across all successful runs
+
+       Model                                  Avg       p50       p95  Issues/run
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    1. qwen3-coder:30b                        0ms       0ms       0ms         0.0 ░░░░░░░░░░░░
+    2. phi4-reasoning:14b                     0ms       0ms       0ms         0.0 ░░░░░░░░░░░░
+    3. gpt-oss:20b                            0ms       0ms       0ms         0.0 ░░░░░░░░░░░░
+    4. devstral-small-2:24b                   0ms       0ms       0ms         0.0 ░░░░░░░░░░░░
+    5. devstral-small-2:24b (~24B)          36.8s     36.8s     36.8s         2.0 ▓░░░░░░░░░░░
+    6. gpt-oss:120b (~120B)                202.0s    202.0s    202.0s        13.0 ▓▓▓░░░░░░░░░
+    7. qwen3-coder:480b (~480B)            670.4s    670.4s    670.4s         8.0 ▓▓▓▓▓▓▓▓▓▓▓░
+    8. kimi-k2.6                           718.0s    718.0s    718.0s        11.0 ▓▓▓▓▓▓▓▓▓▓▓▓
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑤ DETAIL BY FIXTURE  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  html-high  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  gpt-oss:120b (~120B)                13    12     0     1    39    37.5%   23.1%   -0.24    202.0s  TP:12✓  TN:0✓  FP(hallucinated): "Landmark missing distinguishing label (section)"  FN(missed): [html-lang-missing, faq-id-wrong-section, footer-logo-alt-missing, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-link, pricing-toggle-role, table-caption-missing, th-row-scope-missing, testimonial-avatar-alt, faq-aria-controls, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  kimi-k2.6                           11    11     0     0    40    35.5%   21.6%    0.00    718.0s  TP:11✓  TN:0✓  FN(missed): [html-lang-missing, faq-id-wrong-section, footer-logo-alt-missing, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  qwen3-coder:480b (~480B)             8     8     0     0    43    27.1%   15.7%    0.00    670.4s  TP:8✓  TN:0✓  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, newsletter-label-missing, footer-logo-alt-missing, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, table-caption-missing, th-row-scope-missing, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  devstral-small-2:24b (~24B)          2     2     0     0    49     7.5%    3.9%    0.00     36.8s  TP:2✓  TN:0✓  FN(missed): [html-lang-missing, click-here-link, heading-level-skip-h5, axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  qwen3-coder:30b                      -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama connection failed: fetch failed
+  phi4-reasoning:14b                   -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama connection failed: fetch failed
+  gpt-oss:20b                          -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama connection failed: fetch failed
+  devstral-small-2:24b                 -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama connection failed: fetch failed
+
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░  ⑥ FALSE POSITIVE ANALYSIS  (hallucinations on clean files)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Every issue listed below was found by the model on a fixture that has NO real accessibility problems.
+  These are hallucinations — the model invented problems that don't exist.
+
+  ✓  qwen3-coder:30b
+  ✓  phi4-reasoning:14b
+  ✓  gpt-oss:20b
+  ✓  devstral-small-2:24b
+  ✓  qwen3-coder:480b (~480B)
+  ✓  kimi-k2.6
+  ✖  gpt-oss:120b (~120B)  1 hallucination
+      [html-high]  "Landmark missing distinguishing label (section)"
+  ✓  devstral-small-2:24b (~24B)
+
+▐░░░░░░░░░░░░░░░░  ⑦ FALSE NEGATIVE ANALYSIS  (real issues missed on error-present fixtures)  ░░░░░░░░░░░░░░░░░▌
+
+  Every concept ID below was a real accessibility issue that the model failed to find (false negative).
+  Part A ranks concepts by how many models missed them — the higher the bar, the harder the issue.
+  Part B lists per-model breakdowns identical in style to the FP section above.
+
+  html-high
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    html-lang-missing                           4/8  50.0%   ██████████░░░░░░░░░░
+    footer-logo-alt-missing                     4/8  50.0%   ██████████░░░░░░░░░░
+    search-label-missing                        4/8  50.0%   ██████████░░░░░░░░░░
+    hero-img-alt-missing                        4/8  50.0%   ██████████░░░░░░░░░░
+    logo-bar-aria-label                         4/8  50.0%   ██████████░░░░░░░░░░
+    partner-logo-alt                            4/8  50.0%   ██████████░░░░░░░░░░
+    features-heading-id                         4/8  50.0%   ██████████░░░░░░░░░░
+    learn-more-link                             4/8  50.0%   ██████████░░░░░░░░░░
+    step1-heading-skip                          4/8  50.0%   ██████████░░░░░░░░░░
+    step1-img-alt-missing                       4/8  50.0%   ██████████░░░░░░░░░░
+    filter-btn-aria-pressed                     4/8  50.0%   ██████████░░░░░░░░░░
+    contrast-studio-link                        4/8  50.0%   ██████████░░░░░░░░░░
+    pricing-toggle-role                         4/8  50.0%   ██████████░░░░░░░░░░
+    table-caption-missing                       4/8  50.0%   ██████████░░░░░░░░░░
+    th-row-scope-missing                        4/8  50.0%   ██████████░░░░░░░░░░
+    testimonial-avatar-alt                      4/8  50.0%   ██████████░░░░░░░░░░
+    contact-label-missing                       4/8  50.0%   ██████████░░░░░░░░░░
+    skip-links-removed                          4/8  50.0%   ██████████░░░░░░░░░░
+    main-nav-aria-label                         4/8  50.0%   ██████████░░░░░░░░░░
+    mobile-toggle-aria                          4/8  50.0%   ██████████░░░░░░░░░░
+    subnav-btn-aria                             4/8  50.0%   ██████████░░░░░░░░░░
+    search-form-role                            4/8  50.0%   ██████████░░░░░░░░░░
+    account-nav-label                           4/8  50.0%   ██████████░░░░░░░░░░
+    main-id-missing                             4/8  50.0%   ██████████░░░░░░░░░░
+    live-region-removed                         4/8  50.0%   ██████████░░░░░░░░░░
+    hero-section-label                          4/8  50.0%   ██████████░░░░░░░░░░
+    filter-group-label                          4/8  50.0%   ██████████░░░░░░░░░░
+    product-grid-label                          4/8  50.0%   ██████████░░░░░░░░░░
+    row-scope-scans                             4/8  50.0%   ██████████░░░░░░░░░░
+    marcus-avatar-alt                           4/8  50.0%   ██████████░░░░░░░░░░
+    faq-q1-expanded                             4/8  50.0%   ██████████░░░░░░░░░░
+    faq-q2-expanded                             4/8  50.0%   ██████████░░░░░░░░░░
+    contact-aria-required                       4/8  50.0%   ██████████░░░░░░░░░░
+    contact-msg-describedby                     4/8  50.0%   ██████████░░░░░░░░░░
+    products-nav-label                          4/8  50.0%   ██████████░░░░░░░░░░
+    linkedin-link-name                          4/8  50.0%   ██████████░░░░░░░░░░
+    contrast-studio-alt                         3/8  37.5%   ████████░░░░░░░░░░░░
+    faq-aria-controls                           3/8  37.5%   ████████░░░░░░░░░░░░
+    faq-dd-region                               3/8  37.5%   ████████░░░░░░░░░░░░
+    faq-id-wrong-section                        3/8  37.5%   ████████░░░░░░░░░░░░
+    heading-level-skip-h5                       2/8  25.0%   █████░░░░░░░░░░░░░░░
+    newsletter-label-missing                    2/8  25.0%   █████░░░░░░░░░░░░░░░
+    contact-name-autocomplete                   2/8  25.0%   █████░░░░░░░░░░░░░░░
+    td-icon-aria-label                          2/8  25.0%   █████░░░░░░░░░░░░░░░
+    title-empty                                 2/8  25.0%   █████░░░░░░░░░░░░░░░
+    search-btn-name                             1/8  12.5%   ███░░░░░░░░░░░░░░░░░
+    click-here-link                             1/8  12.5%   ███░░░░░░░░░░░░░░░░░
+    axe-runner-alt-missing                      1/8  12.5%   ███░░░░░░░░░░░░░░░░░
+    th-col-scope-missing                        1/8  12.5%   ███░░░░░░░░░░░░░░░░░
+    featured-plan-label                         1/8  12.5%   ███░░░░░░░░░░░░░░░░░
+
+───────────────────────────────────────────────── per model ──────────────────────────────────────────────────
+
+  ✓  qwen3-coder:30b
+  ✓  phi4-reasoning:14b
+  ✓  gpt-oss:20b
+  ✓  devstral-small-2:24b
+  ✖  qwen3-coder:480b (~480B)  43 missed issues
+      [html-high]  html-lang-missing
+      [html-high]  search-btn-name
+      [html-high]  heading-level-skip-h5
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  kimi-k2.6  40 missed issues
+      [html-high]  html-lang-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  footer-logo-alt-missing
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  gpt-oss:120b (~120B)  39 missed issues
+      [html-high]  html-lang-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  footer-logo-alt-missing
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  devstral-small-2:24b (~24B)  49 missed issues
+      [html-high]  html-lang-missing
+      [html-high]  click-here-link
+      [html-high]  heading-level-skip-h5
+      [html-high]  axe-runner-alt-missing
+      [html-high]  th-col-scope-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑧ COMPLEXITY REGRESSION ANALYSIS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Measures how model performance degrades as code complexity increases.
+  Lower degradation slope = more robust model. Graceful degradation preferred over cliff drops.
+
+  Rank Model                     F1(Low) F1(Med) F1(High) Degradation Robustness
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+
+  Interpretation: Slope = (F1_low - F1_high) / F1_low. Lower slope = graceful degradation. 0% = no degradation, 100% = complete failure on complex code.
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑩ STREAMING QUALITY ANALYSIS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Measures how model quality evolves as partial responses are generated.
+  Early-stopping is viable if F1 plateaus before 100% token count.
+
+  Rank Model                      F1@25%  F1@50%  F1@75% F1@100%    Plateau
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+    1. qwen3-coder:480b (~480B)    21.1%   38.1%   48.6%   27.1%        50%
+    2. kimi-k2.6                   27.1%   41.2%   54.1%   35.5%        50%
+    3. gpt-oss:120b (~120B)        24.1%   40.0%   50.0%   37.5%        50%
+    4. devstral-small-2:24b (~24B)   18.4%   16.0%   12.7%    7.5%        25%
+
+  Plateau = earliest % of tokens where F1 reaches 90% of final value.
+  Green = early plateau (early stopping possible).
+  Yellow = full response needed for optimal quality.
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░  ⑪ PARETO FRONTIER ANALYSIS  (Quality vs. Latency Tradeoff)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Identifies optimal models on the F1 vs. latency tradeoff curve.
+  Pareto-optimal models have no competitor that is both faster AND more accurate.
+
+  Rank Model                          F1   Latency          Status
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+    1. qwen3-coder:30b              0.0%       0ms ⭐ PARETO-OPTIMAL
+    2. phi4-reasoning:14b           0.0%       0ms ⭐ PARETO-OPTIMAL
+    3. gpt-oss:20b                  0.0%       0ms ⭐ PARETO-OPTIMAL
+    4. devstral-small-2:24b         0.0%       0ms ⭐ PARETO-OPTIMAL
+    5. gpt-oss:120b (~120B)        37.5%    202.0s ⭐ PARETO-OPTIMAL
+    6. devstral-small-2:24b (~24B)    7.5%     36.8s ⭐ PARETO-OPTIMAL
+·····················································    ·····················································
+    7. qwen3-coder:480b (~480B)    27.1%    670.4s Dominated by gpt-oss:120b (~120B)
+    8. kimi-k2.6                   35.5%    718.0s Dominated by gpt-oss:120b (~120B)
+
+  ASCII scatter: F1 (vertical) vs. Latency (horizontal)
+  Pareto optimal models marked with ●, others with ○
+
+  0.42                                                              
+  0.40                                                              
+  0.37                 ●                                      ○     
+  0.34                                                              
+  0.31                                                              
+  0.28                                                    ○         
+  0.26                                                              
+  0.23                                                              
+  0.20                                                              
+  0.17                                                              
+  0.14                                                              
+  0.11                                                              
+  0.08     ●                                                        
+  0.06                                                              
+  0.03  ●                                                           
+  0.00  ────────────────────────────────────────────────────────────
+        0ms                                             789751ms
+
+  Conclusion: 6 models on Pareto frontier.
+  Choose based on your needs: faster models (left) or more accurate (top).
+
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+▐░░░░░░░░░░░░░░░░░░░░░░░  ⑫ ADVERSARIAL BLIND SPOTS  (Step 6: Vulnerability Analysis)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Each model's known weak spots:
+
+                      ModelCritical   Weak    Good    
+  ───────────────────────────────────────────────────────
+  qwen3-coder:30b          0          0       0       
+  phi4-reasoning:14b       0          0       0       
+  gpt-oss:20b              0          0       0       
+  devstral-small-2:24b     0          0       0       
+  qwen3-coder:480b (~480B) 0          0       0       
+  kimi-k2.6                0          0       0       
+  gpt-oss:120b (~120B)     0          0       0       
+  devstral-small-2:24b (~240          0       0       
+
+  Critical blind spots (< 25% detection):
+
+  ✓ No critical blind spots detected across any model.
+  Summary:
+
+  ✓ Most robust model: qwen3-coder:30b
+    • Catches 0 violation types fully
+
+  ✗ Weakest robustness: devstral-small-2:24b (~24B)
+    • Catches 0 violation types fully
+
+  💡 Key insight: No single model perfectly catches all violation types.
+     Combine results or use models in sequence to maximize coverage.
+
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+

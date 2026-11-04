@@ -1,0 +1,1519 @@
+
+╔════════════════════════════════════════════════════════════════════════════════════════════════════════════╗
+║  Cloud-LLM-Preliminary  ·  Accessibility Auditing Quality                                                    ║
+╠════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
+║  Preset   Balanced  (fixed — only model differs)                                                             ║
+║  Models   15                                                                                                 ║
+║  Runs/combo 1                                                                                                ║
+║  Scoring  80% F1  +  20% speed  (higher = better)                                                            ║
+║  Run at   3/25/2026, 1:07:09 AM                                                                              ║
+╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ① OVERALL RANKING  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+       Model                              Score                       F1    Prec   Recall   TP   FN   FP  AvgTime  Err
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  TP = correctly found issues  ·  FN = missed issues  ·  FP = hallucinated issues  ·  F1 = harmonic mean of Prec & Recall
+
+    🥇 glm-5 (~?B)                        94.0% ███████████████░  100.0%  100.0%   100.0%    0    0    0   208.6s    3
+    🥈 gpt-oss:120b (~120B)               72.2% ████████████░░░░   68.8%   92.0%    57.6%   37   55    6   102.4s    0
+    🥉 qwen3.5:397b (~397B)               62.5% ██████████░░░░░░   56.7%   88.5%    52.1%   21   71    6   103.8s    0
+  ············································································································
+    4. minimax-m2 (~456B MoE)             49.4% ████████░░░░░░░░   44.4%  100.0%    40.0%    2   39    0   215.2s    1
+    5. gemini-3-flash-preview (~?B)       49.0% ████████░░░░░░░░   36.3%   66.5%    51.0%   26   66    6    10.3s    0
+    6. nemotron-3-nano:30b (~30B)         48.5% ████████░░░░░░░░   39.1%   75.0%    33.6%    8   84    4   102.9s    0
+    7. deepseek-v3.2 (~671B MoE)          44.5% ███████░░░░░░░░░   49.6%   90.2%    44.8%   12   80    3   511.1s    0
+    8. minimax-m2.5 (~456B MoE)           44.1% ███████░░░░░░░░░   33.1%   75.0%    47.4%   22   70    1    91.0s    0
+    9. mistral-large-3:675b (~675B)       42.5% ███████░░░░░░░░░   29.6%   60.4%    46.0%   22   70   11    49.9s    0
+   10. devstral-2:123b (~123B)            40.6% ██████░░░░░░░░░░   28.5%   71.9%    43.6%   17   75    3    84.0s    0
+   11. kimi-k2.5 (~?B)                    40.2% ██████░░░░░░░░░░   34.2%   68.8%    49.4%   22   70    3   248.5s    0
+   12. ministral-3:14b (~14B)             36.4% ██████░░░░░░░░░░   25.8%   66.4%    41.8%   14   78    7   151.0s    0
+   13. qwen3-coder:480b (~480B)           31.0% █████░░░░░░░░░░░   18.4%   58.1%    36.2%   12   80    5   135.4s    0
+   14. qwen3-coder-next (~?B)             28.7% █████░░░░░░░░░░░   16.5%   75.0%    35.1%    7   85    4   159.5s    0
+   15. cogito-2.1:671b (~671B)            21.4% ███░░░░░░░░░░░░░   26.8%   75.0%    41.6%   19   73    1   673.6s    0
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ② HIGHLIGHTS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  ╔══ HIGHLIGHTS ════════════════════════════════════════════════════════════════════════════════════════════╗
+  ║   🏆  Best overall         glm-5 (~?B)   composite=94.0%                                                   ║
+  ║   🎯  Best F1 (accuracy)   glm-5 (~?B)   F1=100.0%                                                         ║
+  ║   📊  Best overall Acc     glm-5 (~?B)   Acc=100.0%                                                        ║
+  ║   🔬  Best MCC             qwen3.5:397b (~397B)   MCC=0.234  (Matthews Correlation Coefficient — closer to 1 is better) ║
+  ║   ⚡  Fastest              gemini-3-flash-preview (~?B)   avg=10.3s  p95=12.0s                              ║
+  ║   ✅  Fewest hallucinations minimax-m2 (~456B MoE)   0 false positives                                      ║
+  ║   🔍  Fewest missed issues glm-5 (~?B)   0 false negatives                                                 ║
+  ╚════════════════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ③ EXTENDED METRICS  (confusion-matrix detail)  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  TP = correctly found issues  ·  TN = correctly skipped non-issues  ·  FP = hallucinations  ·  FN = missed issues
+  Acc = overall accuracy  ·  BalAcc = (TPR+TNR)/2  ·  MCC = Matthews Correlation Coefficient (−1 worst · 0 random · +1 perfect)
+  Specif = specificity = TN/(TN+FP) i.e. how well the model avoids hallucinations  ·  NPV = TN/(TN+FN) i.e. how reliable a "no issue" verdict is
+
+       Model                                Acc   BalAcc     MCC   Specif     NPV    TP     TN    FP    FN
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    🥇 glm-5 (~?B)                       100.0%   100.0%   0.000   100.0%  100.0%     0     51     0     0
+    🥈 gpt-oss:120b (~120B)               71.6%    64.7%   0.176    71.7%   60.8%    37    112     6    55
+    🥉 qwen3.5:397b (~397B)               63.1%    73.4%   0.234    94.7%   61.7%    21    112     6    71
+    4. minimax-m2 (~456B MoE)             74.5%    70.0%   0.136   100.0%   74.3%     2    112     0    39
+    5. gemini-3-flash-preview (~?B)       65.4%    61.4%   0.166    71.8%   59.5%    26    112     6    66
+    6. nemotron-3-nano:30b (~30B)         58.1%    53.4%  -0.055    73.2%   56.1%     8    112     4    84
+    7. deepseek-v3.2 (~671B MoE)          59.7%    71.2%   0.204    97.6%   58.9%    12    112     3    80
+    8. minimax-m2.5 (~456B MoE)           65.2%    73.5%   0.233    99.5%   58.2%    22    112     1    70
+    9. mistral-large-3:675b (~675B)       61.6%    58.4%   0.089    70.7%   58.2%    22    112    11    70
+   10. devstral-2:123b (~123B)            62.0%    70.7%   0.208    97.9%   58.2%    17    112     3    75
+   11. kimi-k2.5 (~?B)                    64.9%    61.4%   0.165    73.3%   58.6%    22    112     3    70
+   12. ministral-3:14b (~14B)             59.2%    56.7%   0.093    71.6%   57.9%    14    112     7    78
+   13. qwen3-coder:480b (~480B)           59.2%    54.2%   0.020    72.3%   56.6%    12    112     5    80
+   14. qwen3-coder-next (~?B)             56.5%    66.6%   0.167    98.2%   56.6%     7    112     4    85
+   15. cogito-2.1:671b (~671B)            63.7%    70.6%   0.185    99.5%   57.0%    19    112     1    73
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ④ RESPONSE TIME  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Avg / Median (p50) / 95th-percentile across all successful runs
+
+       Model                                  Avg       p50       p95  Issues/run
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    1. gemini-3-flash-preview (~?B)         10.3s     10.7s     12.0s         8.0 ░░░░░░░░░░░░
+    2. mistral-large-3:675b (~675B)         49.9s     52.3s     64.3s         8.3 ▓░░░░░░░░░░░
+    3. devstral-2:123b (~123B)              84.0s     41.0s    213.3s         5.0 ▓░░░░░░░░░░░
+    4. minimax-m2.5 (~456B MoE)             91.0s     86.7s    141.5s         5.8 ▓▓░░░░░░░░░░
+    5. gpt-oss:120b (~120B)                102.4s    100.0s    139.6s        10.8 ▓▓░░░░░░░░░░
+    6. nemotron-3-nano:30b (~30B)          102.9s    113.1s    140.1s         3.0 ▓▓░░░░░░░░░░
+    7. qwen3.5:397b (~397B)                103.8s     80.6s    186.1s         6.8 ▓▓░░░░░░░░░░
+    8. qwen3-coder:480b (~480B)            135.4s    105.2s    282.9s         4.3 ▓▓░░░░░░░░░░
+    9. ministral-3:14b (~14B)              151.0s    152.9s    258.1s         5.3 ▓▓▓░░░░░░░░░
+   10. qwen3-coder-next (~?B)              159.5s     28.5s    486.0s         2.8 ▓▓▓░░░░░░░░░
+   11. glm-5 (~?B)                         208.6s    208.6s    208.6s         0.0 ▓▓▓▓░░░░░░░░
+   12. minimax-m2 (~456B MoE)              215.2s    308.4s    321.8s         0.7 ▓▓▓▓░░░░░░░░
+   13. kimi-k2.5 (~?B)                     248.5s    244.0s    282.7s         6.3 ▓▓▓▓░░░░░░░░
+   14. deepseek-v3.2 (~671B MoE)           511.1s    437.8s    855.5s         3.8 ▓▓▓▓▓▓▓▓▓░░░
+   15. cogito-2.1:671b (~671B)             673.6s    698.7s    713.1s         5.0 ▓▓▓▓▓▓▓▓▓▓▓▓
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑤ DETAIL BY FIXTURE  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  html-clean  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  nemotron-3-nano:30b (~30B)           0     0    51     0     0   100.0%  100.0%    0.00    138.7s  ✓ PERFECT  TP:0 correct finds  TN:51 correct skips
+  minimax-m2 (~456B MoE)               0     0    51     0     0   100.0%  100.0%    0.00    308.4s  ✓ PERFECT  TP:0 correct finds  TN:51 correct skips
+  deepseek-v3.2 (~671B MoE)            0     0    51     0     0   100.0%  100.0%    0.00    900.5s  ✓ PERFECT  TP:0 correct finds  TN:51 correct skips
+  gpt-oss:120b (~120B)                 0     0    51     0     0   100.0%  100.0%    0.00     63.4s  ✓ PERFECT  TP:0 correct finds  TN:51 correct skips
+  qwen3.5:397b (~397B)                 0     0    51     0     0   100.0%  100.0%    0.00    204.1s  ✓ PERFECT  TP:0 correct finds  TN:51 correct skips
+  glm-5 (~?B)                          0     0    51     0     0   100.0%  100.0%    0.00    208.6s  ✓ PERFECT  TP:0 correct finds  TN:51 correct skips
+  ministral-3:14b (~14B)               5     0    51     5     0     0.0%   91.1%    0.00     62.0s  TP:0✓  TN:51✓  FP(hallucinated): "Image missing alt attribute", "Non-descriptive link text" +3 more
+  gemini-3-flash-preview (~?B)         3     0    51     3     0     0.0%   94.4%    0.00     10.2s  TP:0✓  TN:51✓  FP(hallucinated): "Missing accessible name on button", "Table header missing scope" +1 more
+  minimax-m2.5 (~456B MoE)             1     0    51     1     0     0.0%   98.1%    0.00    149.9s  TP:0✓  TN:51✓  FP(hallucinated): "Redundant role on header element"
+  devstral-2:123b (~123B)              2     0    51     2     0     0.0%   96.2%    0.00     10.3s  TP:0✓  TN:51✓  FP(hallucinated): "Missing accessible name on button", "Missing scope attribute on table header"
+  cogito-2.1:671b (~671B)              1     0    51     1     0     0.0%   98.1%    0.00    700.9s  TP:0✓  TN:51✓  FP(hallucinated): "Missing scope attribute on table headers"
+  mistral-large-3:675b (~675B)         6     0    51     6     0     0.0%   89.5%    0.00     64.8s  TP:0✓  TN:51✓  FP(hallucinated): "Non-descriptive link text", "Table header missing scope" +4 more
+  qwen3-coder:480b (~480B)             2     0    51     2     0     0.0%   96.2%    0.00     66.0s  TP:0✓  TN:51✓  FP(hallucinated): "Missing accessible name on link", "Non-descriptive link text"
+  qwen3-coder-next (~?B)               4     0    51     4     0     0.0%   92.7%    0.00    565.6s  TP:0✓  TN:51✓  FP(hallucinated): "image missing alt attribute", "non-descriptive link text" +2 more
+  kimi-k2.5 (~?B)                      1     0    51     1     0     0.0%   98.1%    0.00    259.0s  TP:0✓  TN:51✓  FP(hallucinated): "Informative image hidden by aria-hidden ancestor"
+
+  html-low  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  kimi-k2.5 (~?B)                      6     6    41     0     4    75.0%   92.2%    0.74    229.0s  TP:6✓  TN:41✓  FN(missed): [faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  minimax-m2.5 (~456B MoE)             5     5    41     0     5    66.7%   90.2%    0.67     94.4s  TP:5✓  TN:41✓  FN(missed): [search-btn-name, th-col-scope-missing, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  gpt-oss:120b (~120B)                 5     5    41     0     5    66.7%   90.2%    0.67    146.0s  TP:5✓  TN:41✓  FN(missed): [html-lang-missing, heading-level-skip-h5, faq-id-wrong-section, footer-logo-alt-missing, twitter-link-name]
+  deepseek-v3.2 (~671B MoE)            8     6    41     2     4    66.7%   88.7%    0.60    268.2s  TP:6✓  TN:41✓  FP(hallucinated): "Redundant ARIA role on header", "Redundant ARIA role on unordered list"  FN(missed): [html-lang-missing, faq-id-wrong-section, footer-logo-alt-missing, twitter-link-name]
+  qwen3.5:397b (~397B)                 8     6    41     2     4    66.7%   88.7%    0.60     49.9s  TP:6✓  TN:41✓  FP(hallucinated): "Redundant ARIA role on header element", "Redundant ARIA role on footer element"  FN(missed): [click-here-link, faq-id-wrong-section, footer-logo-alt-missing, twitter-link-name]
+  gemini-3-flash-preview (~?B)         6     5    41     1     5    62.5%   88.5%    0.59      7.6s  TP:5✓  TN:41✓  FP(hallucinated): "Form control missing accessible label"  FN(missed): [search-btn-name, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  ministral-3:14b (~14B)               4     4    41     0     6    57.1%   88.2%    0.59    243.9s  TP:4✓  TN:41✓  FN(missed): [html-lang-missing, heading-level-skip-h5, axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, footer-logo-alt-missing]
+  devstral-2:123b (~123B)              4     4    41     0     6    57.1%   88.2%    0.59    243.6s  TP:4✓  TN:41✓  FN(missed): [axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  mistral-large-3:675b (~675B)         7     4    41     3     6    47.1%   83.3%    0.38     42.8s  TP:4✓  TN:41✓  FP(hallucinated): "Redundant ARIA role on list item", "Redundant ARIA role on navigation" +1 more  FN(missed): [html-lang-missing, search-btn-name, axe-runner-alt-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing]
+  cogito-2.1:671b (~671B)              3     3    41     0     7    46.2%   86.3%    0.51    696.5s  TP:3✓  TN:41✓  FN(missed): [html-lang-missing, click-here-link, axe-runner-alt-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  qwen3-coder-next (~?B)               3     3    41     0     7    46.2%   86.3%    0.51     15.6s  TP:3✓  TN:41✓  FN(missed): [html-lang-missing, click-here-link, heading-level-skip-h5, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  minimax-m2 (~456B MoE)               2     2    41     0     8    33.3%   84.3%    0.41     14.0s  TP:2✓  TN:41✓  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  nemotron-3-nano:30b (~30B)           3     2    41     1     8    30.8%   82.7%    0.30    140.3s  TP:2✓  TN:41✓  FP(hallucinated): "Missing accessible name on image"  FN(missed): [html-lang-missing, click-here-link, heading-level-skip-h5, axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing]
+  qwen3-coder:480b (~480B)             3     2    41     1     8    30.8%   82.7%    0.30     24.0s  TP:2✓  TN:41✓  FP(hallucinated): "Form control missing accessible label"  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name]
+  glm-5 (~?B)                          -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama HTTP 503: {"StatusCode":503,"Status":"503 Service Unavailable","error":"Service Temporarily Unavailable"}
+
+  html-medium  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  qwen3.5:397b (~397B)                19    15    20     4    16    60.0%   63.6%    0.33     77.0s  TP:15✓  TN:20✓  FP(hallucinated): "Table header "Pro" missing scope", "Table header "Enterprise" missing scope" +2 more  FN(missed): [faq-id-wrong-section, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, features-heading-id, learn-more-link, step1-heading-skip, filter-btn-aria-pressed, contrast-studio-link, pricing-toggle-role, table-caption-missing, td-icon-aria-label, faq-aria-controls, faq-dd-region, contact-label-missing]
+  gpt-oss:120b (~120B)                17    14    20     3    17    58.3%   63.0%    0.34    103.2s  TP:14✓  TN:20✓  FP(hallucinated): "Fieldset missing legend (interest checkboxes)", "Table header missing scope (Enterprise column)" +1 more  FN(missed): [html-lang-missing, faq-id-wrong-section, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, features-heading-id, learn-more-link, step1-heading-skip, filter-btn-aria-pressed, contrast-studio-link, pricing-toggle-role, table-caption-missing, td-icon-aria-label, faq-aria-controls, faq-dd-region, contact-label-missing]
+  gemini-3-flash-preview (~?B)        11    10    20     1    21    47.6%   57.7%    0.33     11.1s  TP:10✓  TN:20✓  FP(hallucinated): "Fieldset missing legend"  FN(missed): [newsletter-label-missing, footer-logo-alt-missing, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, table-caption-missing, th-row-scope-missing, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  mistral-large-3:675b (~675B)         7     7    20     0    24    36.8%   52.9%    0.32     30.2s  TP:7✓  TN:20✓  FN(missed): [search-btn-name, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  devstral-2:123b (~123B)              8     7    20     1    24    35.9%   51.9%    0.24     40.9s  TP:7✓  TN:20✓  FP(hallucinated): "Empty <title> element"  FN(missed): [faq-id-wrong-section, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  ministral-3:14b (~14B)               7     6    20     1    25    31.6%   50.0%    0.21     37.3s  TP:6✓  TN:20✓  FP(hallucinated): "Missing title content"  FN(missed): [html-lang-missing, heading-level-skip-h5, faq-id-wrong-section, footer-logo-alt-missing, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  deepseek-v3.2 (~671B MoE)            7     6    20     1    25    31.6%   50.0%    0.21    275.2s  TP:6✓  TN:20✓  FP(hallucinated): "Fieldset missing legend"  FN(missed): [html-lang-missing, faq-id-wrong-section, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  minimax-m2.5 (~456B MoE)             5     5    20     0    26    27.8%   49.0%    0.26     79.1s  TP:5✓  TN:20✓  FN(missed): [click-here-link, axe-runner-alt-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  kimi-k2.5 (~?B)                      6     5    20     1    26    27.0%   48.1%    0.17    219.2s  TP:5✓  TN:20✓  FP(hallucinated): "Fieldset missing legend"  FN(missed): [html-lang-missing, click-here-link, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  cogito-2.1:671b (~671B)              4     4    20     0    27    22.9%   47.1%    0.23    715.2s  TP:4✓  TN:20✓  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  qwen3-coder:480b (~480B)             5     4    20     1    27    22.2%   46.2%    0.14    144.4s  TP:4✓  TN:20✓  FP(hallucinated): "Empty heading element"  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  qwen3-coder-next (~?B)               2     2    20     0    29    12.1%   43.1%    0.16     21.6s  TP:2✓  TN:20✓  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  nemotron-3-nano:30b (~30B)           3     2    20     1    29    11.8%   42.3%    0.04     87.6s  TP:2✓  TN:20✓  FP(hallucinated): "form control missing accessible label"  FN(missed): [html-lang-missing, search-btn-name, click-here-link, heading-level-skip-h5, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  minimax-m2 (~456B MoE)               0     0    20     0    31     0.0%   39.2%    0.00    323.3s  TP:0✓  TN:20✓  FN(missed): [html-lang-missing, search-btn-name, click-here-link, heading-level-skip-h5, axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing]
+  glm-5 (~?B)                          -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama HTTP 503: {"StatusCode":503,"Status":"503 Service Unavailable","error":"Service Temporarily Unavailable"}
+
+  html-high  (issues-present fixture)
+
+  Model                            Found   TP✓   TN✓   FP✗   FN✗      F1%    Acc%     MCC      Time  Notes
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  gpt-oss:120b (~120B)                21    18     0     3    33    50.0%   33.3%   -0.30     96.8s  TP:18✓  TN:0✓  FP(hallucinated): "Fieldset missing legend (interest checkboxes)", "Table header missing scope (Enterprise column)" +1 more  FN(missed): [html-lang-missing, faq-id-wrong-section, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, filter-btn-aria-pressed, pricing-toggle-role, featured-plan-label, table-caption-missing, td-icon-aria-label, faq-aria-controls, faq-dd-region, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  minimax-m2.5 (~456B MoE)            12    12     0     0    39    38.1%   23.5%    0.00     40.7s  TP:12✓  TN:0✓  FN(missed): [click-here-link, faq-id-wrong-section, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  cogito-2.1:671b (~671B)             12    12     0     0    39    38.1%   23.5%    0.00    581.7s  TP:12✓  TN:0✓  FN(missed): [heading-level-skip-h5, faq-id-wrong-section, twitter-link-name, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  gemini-3-flash-preview (~?B)        12    11     0     1    40    34.9%   21.2%   -0.26     12.1s  TP:11✓  TN:0✓  FP(hallucinated): "Fieldset missing legend"  FN(missed): [newsletter-label-missing, footer-logo-alt-missing, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  kimi-k2.5 (~?B)                     12    11     0     1    40    34.9%   21.2%   -0.26    286.9s  TP:11✓  TN:0✓  FP(hallucinated): "fieldset missing legend"  FN(missed): [footer-logo-alt-missing, twitter-link-name, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-dd-region, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  mistral-large-3:675b (~675B)        13    11     0     2    40    34.4%   20.8%   -0.35     61.7s  TP:11✓  TN:0✓  FP(hallucinated): "Form control missing accessible label", "Checkbox group missing fieldset and legend"  FN(missed): [newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-dd-region, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  devstral-2:123b (~123B)              6     6     0     0    45    21.1%   11.8%    0.00     41.2s  TP:6✓  TN:0✓  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, faq-id-wrong-section, footer-logo-alt-missing, twitter-link-name, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  qwen3-coder:480b (~480B)             7     6     0     1    45    20.7%   11.5%   -0.36    307.3s  TP:6✓  TN:0✓  FP(hallucinated): "Fieldset missing legend"  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  ministral-3:14b (~14B)               5     4     0     1    47    14.3%    7.7%   -0.43    260.6s  TP:4✓  TN:0✓  FP(hallucinated): "Missing title content"  FN(missed): [html-lang-missing, click-here-link, heading-level-skip-h5, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  nemotron-3-nano:30b (~30B)           6     4     0     2    47    14.0%    7.5%   -0.55     45.1s  TP:4✓  TN:0✓  FP(hallucinated): "missing accessible name on button", "form control missing accessible label"  FN(missed): [html-lang-missing, click-here-link, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  qwen3-coder-next (~?B)               2     2     0     0    49     7.5%    3.9%    0.00     35.3s  TP:2✓  TN:0✓  FN(missed): [html-lang-missing, search-btn-name, heading-level-skip-h5, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  minimax-m2 (~456B MoE)               -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama HTTP 500: {"StatusCode":500,"Status":"500 Internal Server Error","error":"Internal Server Error (ref: 5fbf2656-d085-4812-907e-ea7b95b39644)"}
+  deepseek-v3.2 (~671B MoE)            0     0     0     0    51     0.0%    0.0%    0.00    600.5s  TP:0✓  TN:0✓  FN(missed): [html-lang-missing, search-btn-name, click-here-link, heading-level-skip-h5, axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  qwen3.5:397b (~397B)                 0     0     0     0    51     0.0%    0.0%    0.00     84.2s  TP:0✓  TN:0✓  FN(missed): [html-lang-missing, search-btn-name, click-here-link, heading-level-skip-h5, axe-runner-alt-missing, th-col-scope-missing, faq-id-wrong-section, newsletter-label-missing, footer-logo-alt-missing, twitter-link-name, title-empty, search-label-missing, hero-img-alt-missing, logo-bar-aria-label, partner-logo-alt, features-heading-id, learn-more-link, step1-heading-skip, step1-img-alt-missing, filter-btn-aria-pressed, contrast-studio-alt, contrast-studio-link, pricing-toggle-role, featured-plan-label, table-caption-missing, th-row-scope-missing, td-icon-aria-label, testimonial-avatar-alt, faq-aria-controls, faq-dd-region, contact-label-missing, skip-links-removed, main-nav-aria-label, mobile-toggle-aria, subnav-btn-aria, search-form-role, account-nav-label, main-id-missing, live-region-removed, hero-section-label, filter-group-label, product-grid-label, row-scope-scans, marcus-avatar-alt, faq-q1-expanded, faq-q2-expanded, contact-name-autocomplete, contact-aria-required, contact-msg-describedby, products-nav-label, linkedin-link-name]
+  glm-5 (~?B)                          -     -     -     -     -      ERR       -       -         -  ✖ ERROR: Ollama HTTP 503: {"StatusCode":503,"Status":"503 Service Unavailable","error":"Service Temporarily Unavailable"}
+
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░  ⑥ FALSE POSITIVE ANALYSIS  (hallucinations on clean files)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Every issue listed below was found by the model on a fixture that has NO real accessibility problems.
+  These are hallucinations — the model invented problems that don't exist.
+
+  ✖  ministral-3:14b (~14B)  7 hallucinations
+      [html-clean]  "Image missing alt attribute"
+      [html-clean]  "Non-descriptive link text"
+      [html-clean]  "Missing accessible name on link"
+      [html-clean]  "Form control missing accessible label"
+      [html-clean]  "Table header missing scope"
+      [html-medium]  "Missing title content"
+      [html-high]  "Missing title content"
+  ✖  nemotron-3-nano:30b (~30B)  4 hallucinations
+      [html-low]  "Missing accessible name on image"
+      [html-medium]  "form control missing accessible label"
+      [html-high]  "missing accessible name on button"
+      [html-high]  "form control missing accessible label"
+  ✖  gemini-3-flash-preview (~?B)  6 hallucinations
+      [html-clean]  "Missing accessible name on button"
+      [html-clean]  "Table header missing scope"
+      [html-clean]  "Form control missing accessible label"
+      [html-low]  "Form control missing accessible label"
+      [html-medium]  "Fieldset missing legend"
+      [html-high]  "Fieldset missing legend"
+  ✓  minimax-m2 (~456B MoE)
+  ✖  minimax-m2.5 (~456B MoE)  1 hallucination
+      [html-clean]  "Redundant role on header element"
+  ✖  deepseek-v3.2 (~671B MoE)  3 hallucinations
+      [html-low]  "Redundant ARIA role on header"
+      [html-low]  "Redundant ARIA role on unordered list"
+      [html-medium]  "Fieldset missing legend"
+  ✖  devstral-2:123b (~123B)  3 hallucinations
+      [html-clean]  "Missing accessible name on button"
+      [html-clean]  "Missing scope attribute on table header"
+      [html-medium]  "Empty <title> element"
+  ✖  gpt-oss:120b (~120B)  6 hallucinations
+      [html-medium]  "Fieldset missing legend (interest checkboxes)"
+      [html-medium]  "Table header missing scope (Enterprise column)"
+      [html-medium]  "Table header missing scope (Projects row header)"
+      [html-high]  "Fieldset missing legend (interest checkboxes)"
+      [html-high]  "Table header missing scope (Enterprise column)"
+      [html-high]  "Table header missing scope (Projects row)"
+  ✖  cogito-2.1:671b (~671B)  1 hallucination
+      [html-clean]  "Missing scope attribute on table headers"
+  ✖  mistral-large-3:675b (~675B)  11 hallucinations
+      [html-clean]  "Non-descriptive link text"
+      [html-clean]  "Table header missing scope"
+      [html-clean]  "Redundant ARIA role on list"
+      [html-clean]  "Form control missing accessible label"
+      [html-clean]  "Redundant ARIA role on banner"
+      [html-clean]  "Redundant ARIA role on contentinfo"
+      [html-low]  "Redundant ARIA role on list item"
+      [html-low]  "Redundant ARIA role on navigation"
+      [html-low]  "Redundant ARIA role on banner"
+      [html-high]  "Form control missing accessible label"
+      [html-high]  "Checkbox group missing fieldset and legend"
+  ✖  qwen3.5:397b (~397B)  6 hallucinations
+      [html-low]  "Redundant ARIA role on header element"
+      [html-low]  "Redundant ARIA role on footer element"
+      [html-medium]  "Table header "Pro" missing scope"
+      [html-medium]  "Table header "Enterprise" missing scope"
+      [html-medium]  "Table header "Projects" missing scope"
+      [html-medium]  "Fieldset missing legend"
+  ✖  qwen3-coder:480b (~480B)  5 hallucinations
+      [html-clean]  "Missing accessible name on link"
+      [html-clean]  "Non-descriptive link text"
+      [html-low]  "Form control missing accessible label"
+      [html-medium]  "Empty heading element"
+      [html-high]  "Fieldset missing legend"
+  ✖  qwen3-coder-next (~?B)  4 hallucinations
+      [html-clean]  "image missing alt attribute"
+      [html-clean]  "non-descriptive link text"
+      [html-clean]  "form control missing accessible label"
+      [html-clean]  "table header missing scope"
+  ✖  kimi-k2.5 (~?B)  3 hallucinations
+      [html-clean]  "Informative image hidden by aria-hidden ancestor"
+      [html-medium]  "Fieldset missing legend"
+      [html-high]  "fieldset missing legend"
+  ✓  glm-5 (~?B)
+
+▐░░░░░░░░░░░░░░░░  ⑦ FALSE NEGATIVE ANALYSIS  (real issues missed on error-present fixtures)  ░░░░░░░░░░░░░░░░░▌
+
+  Every concept ID below was a real accessibility issue that the model failed to find (false negative).
+  Part A ranks concepts by how many models missed them — the higher the bar, the harder the issue.
+  Part B lists per-model breakdowns identical in style to the FP section above.
+
+  html-low
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    footer-logo-alt-missing                     14/15  93.3% ███████████████████░
+    faq-id-wrong-section                        13/15  86.7% █████████████████░░░
+    twitter-link-name                           11/15  73.3% ███████████████░░░░░
+    newsletter-label-missing                    10/15  66.7% █████████████░░░░░░░
+    html-lang-missing                           9/15  60.0%  ████████████░░░░░░░░
+    heading-level-skip-h5                       6/15  40.0%  ████████░░░░░░░░░░░░
+    th-col-scope-missing                        6/15  40.0%  ████████░░░░░░░░░░░░
+    axe-runner-alt-missing                      5/15  33.3%  ███████░░░░░░░░░░░░░
+    search-btn-name                             5/15  33.3%  ███████░░░░░░░░░░░░░
+    click-here-link                             4/15  26.7%  █████░░░░░░░░░░░░░░░
+
+  html-medium
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    search-label-missing                        14/15  93.3% ███████████████████░
+    hero-img-alt-missing                        14/15  93.3% ███████████████████░
+    logo-bar-aria-label                         14/15  93.3% ███████████████████░
+    features-heading-id                         14/15  93.3% ███████████████████░
+    learn-more-link                             14/15  93.3% ███████████████████░
+    step1-heading-skip                          14/15  93.3% ███████████████████░
+    filter-btn-aria-pressed                     14/15  93.3% ███████████████████░
+    contrast-studio-link                        14/15  93.3% ███████████████████░
+    pricing-toggle-role                         14/15  93.3% ███████████████████░
+    table-caption-missing                       14/15  93.3% ███████████████████░
+    faq-aria-controls                           14/15  93.3% ███████████████████░
+    faq-dd-region                               14/15  93.3% ███████████████████░
+    contact-label-missing                       14/15  93.3% ███████████████████░
+    faq-id-wrong-section                        13/15  86.7% █████████████████░░░
+    td-icon-aria-label                          13/15  86.7% █████████████████░░░
+    footer-logo-alt-missing                     12/15  80.0% ████████████████░░░░
+    partner-logo-alt                            12/15  80.0% ████████████████░░░░
+    step1-img-alt-missing                       12/15  80.0% ████████████████░░░░
+    contrast-studio-alt                         12/15  80.0% ████████████████░░░░
+    th-row-scope-missing                        12/15  80.0% ████████████████░░░░
+    testimonial-avatar-alt                      12/15  80.0% ████████████████░░░░
+    featured-plan-label                         11/15  73.3% ███████████████░░░░░
+    html-lang-missing                           9/15  60.0%  ████████████░░░░░░░░
+    title-empty                                 9/15  60.0%  ████████████░░░░░░░░
+    newsletter-label-missing                    9/15  60.0%  ████████████░░░░░░░░
+    twitter-link-name                           7/15  46.7%  █████████░░░░░░░░░░░
+    heading-level-skip-h5                       6/15  40.0%  ████████░░░░░░░░░░░░
+    search-btn-name                             6/15  40.0%  ████████░░░░░░░░░░░░
+    click-here-link                             4/15  26.7%  █████░░░░░░░░░░░░░░░
+    th-col-scope-missing                        4/15  26.7%  █████░░░░░░░░░░░░░░░
+    axe-runner-alt-missing                      2/15  13.3%  ███░░░░░░░░░░░░░░░░░
+
+  html-high
+  concept-id                                 missed-by   bar
+  ────────────────────────────────────────────────────────────────────────────────────────────────────────────
+    search-label-missing                        13/15  86.7% █████████████████░░░
+    hero-img-alt-missing                        13/15  86.7% █████████████████░░░
+    logo-bar-aria-label                         13/15  86.7% █████████████████░░░
+    pricing-toggle-role                         13/15  86.7% █████████████████░░░
+    table-caption-missing                       13/15  86.7% █████████████████░░░
+    td-icon-aria-label                          13/15  86.7% █████████████████░░░
+    faq-dd-region                               13/15  86.7% █████████████████░░░
+    main-nav-aria-label                         13/15  86.7% █████████████████░░░
+    mobile-toggle-aria                          13/15  86.7% █████████████████░░░
+    subnav-btn-aria                             13/15  86.7% █████████████████░░░
+    search-form-role                            13/15  86.7% █████████████████░░░
+    account-nav-label                           13/15  86.7% █████████████████░░░
+    main-id-missing                             13/15  86.7% █████████████████░░░
+    hero-section-label                          13/15  86.7% █████████████████░░░
+    filter-group-label                          13/15  86.7% █████████████████░░░
+    product-grid-label                          13/15  86.7% █████████████████░░░
+    faq-q1-expanded                             13/15  86.7% █████████████████░░░
+    faq-q2-expanded                             13/15  86.7% █████████████████░░░
+    contact-name-autocomplete                   13/15  86.7% █████████████████░░░
+    contact-aria-required                       13/15  86.7% █████████████████░░░
+    contact-msg-describedby                     13/15  86.7% █████████████████░░░
+    products-nav-label                          13/15  86.7% █████████████████░░░
+    linkedin-link-name                          13/15  86.7% █████████████████░░░
+    partner-logo-alt                            12/15  80.0% ████████████████░░░░
+    learn-more-link                             12/15  80.0% ████████████████░░░░
+    step1-img-alt-missing                       12/15  80.0% ████████████████░░░░
+    filter-btn-aria-pressed                     12/15  80.0% ████████████████░░░░
+    contrast-studio-link                        12/15  80.0% ████████████████░░░░
+    featured-plan-label                         12/15  80.0% ████████████████░░░░
+    th-row-scope-missing                        12/15  80.0% ████████████████░░░░
+    testimonial-avatar-alt                      12/15  80.0% ████████████████░░░░
+    live-region-removed                         12/15  80.0% ████████████████░░░░
+    row-scope-scans                             12/15  80.0% ████████████████░░░░
+    marcus-avatar-alt                           12/15  80.0% ████████████████░░░░
+    features-heading-id                         12/15  80.0% ████████████████░░░░
+    step1-heading-skip                          11/15  73.3% ███████████████░░░░░
+    faq-aria-controls                           11/15  73.3% ███████████████░░░░░
+    contact-label-missing                       11/15  73.3% ███████████████░░░░░
+    faq-id-wrong-section                        10/15  66.7% █████████████░░░░░░░
+    footer-logo-alt-missing                     10/15  66.7% █████████████░░░░░░░
+    twitter-link-name                           10/15  66.7% █████████████░░░░░░░
+    contrast-studio-alt                         10/15  66.7% █████████████░░░░░░░
+    html-lang-missing                           8/15  53.3%  ███████████░░░░░░░░░
+    newsletter-label-missing                    8/15  53.3%  ███████████░░░░░░░░░
+    heading-level-skip-h5                       7/15  46.7%  █████████░░░░░░░░░░░
+    title-empty                                 6/15  40.0%  ████████░░░░░░░░░░░░
+    click-here-link                             5/15  33.3%  ███████░░░░░░░░░░░░░
+    skip-links-removed                          5/15  33.3%  ███████░░░░░░░░░░░░░
+    search-btn-name                             5/15  33.3%  ███████░░░░░░░░░░░░░
+    th-col-scope-missing                        4/15  26.7%  █████░░░░░░░░░░░░░░░
+    axe-runner-alt-missing                      2/15  13.3%  ███░░░░░░░░░░░░░░░░░
+
+───────────────────────────────────────────────── per model ──────────────────────────────────────────────────
+
+  ✖  ministral-3:14b (~14B)  78 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  heading-level-skip-h5
+      [html-low]  axe-runner-alt-missing
+      [html-low]  th-col-scope-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  footer-logo-alt-missing
+      [html-medium]  html-lang-missing
+      [html-medium]  heading-level-skip-h5
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  click-here-link
+      [html-high]  heading-level-skip-h5
+      [html-high]  th-col-scope-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  nemotron-3-nano:30b (~30B)  84 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  click-here-link
+      [html-low]  heading-level-skip-h5
+      [html-low]  axe-runner-alt-missing
+      [html-low]  th-col-scope-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-medium]  html-lang-missing
+      [html-medium]  search-btn-name
+      [html-medium]  click-here-link
+      [html-medium]  heading-level-skip-h5
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  twitter-link-name
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  click-here-link
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  gemini-3-flash-preview (~?B)  66 missed issues
+      [html-low]  search-btn-name
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  minimax-m2 (~456B MoE)  39 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  search-btn-name
+      [html-low]  heading-level-skip-h5
+      [html-low]  th-col-scope-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  html-lang-missing
+      [html-medium]  search-btn-name
+      [html-medium]  click-here-link
+      [html-medium]  heading-level-skip-h5
+      [html-medium]  axe-runner-alt-missing
+      [html-medium]  th-col-scope-missing
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  twitter-link-name
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+  ✖  minimax-m2.5 (~456B MoE)  70 missed issues
+      [html-low]  search-btn-name
+      [html-low]  th-col-scope-missing
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  click-here-link
+      [html-medium]  axe-runner-alt-missing
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  twitter-link-name
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  click-here-link
+      [html-high]  faq-id-wrong-section
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  deepseek-v3.2 (~671B MoE)  80 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  html-lang-missing
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  twitter-link-name
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  search-btn-name
+      [html-high]  click-here-link
+      [html-high]  heading-level-skip-h5
+      [html-high]  axe-runner-alt-missing
+      [html-high]  th-col-scope-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  devstral-2:123b (~123B)  75 missed issues
+      [html-low]  axe-runner-alt-missing
+      [html-low]  th-col-scope-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  twitter-link-name
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  search-btn-name
+      [html-high]  heading-level-skip-h5
+      [html-high]  faq-id-wrong-section
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  gpt-oss:120b (~120B)  55 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  heading-level-skip-h5
+      [html-low]  faq-id-wrong-section
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  html-lang-missing
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  table-caption-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  cogito-2.1:671b (~671B)  73 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  click-here-link
+      [html-low]  axe-runner-alt-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  html-lang-missing
+      [html-medium]  search-btn-name
+      [html-medium]  heading-level-skip-h5
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  twitter-link-name
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  heading-level-skip-h5
+      [html-high]  faq-id-wrong-section
+      [html-high]  twitter-link-name
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  mistral-large-3:675b (~675B)  70 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  search-btn-name
+      [html-low]  axe-runner-alt-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-medium]  search-btn-name
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  qwen3.5:397b (~397B)  71 missed issues
+      [html-low]  click-here-link
+      [html-low]  faq-id-wrong-section
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  table-caption-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  search-btn-name
+      [html-high]  click-here-link
+      [html-high]  heading-level-skip-h5
+      [html-high]  axe-runner-alt-missing
+      [html-high]  th-col-scope-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  qwen3-coder:480b (~480B)  80 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  search-btn-name
+      [html-low]  heading-level-skip-h5
+      [html-low]  th-col-scope-missing
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  html-lang-missing
+      [html-medium]  search-btn-name
+      [html-medium]  heading-level-skip-h5
+      [html-medium]  th-col-scope-missing
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  search-btn-name
+      [html-high]  heading-level-skip-h5
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  qwen3-coder-next (~?B)  85 missed issues
+      [html-low]  html-lang-missing
+      [html-low]  click-here-link
+      [html-low]  heading-level-skip-h5
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  html-lang-missing
+      [html-medium]  search-btn-name
+      [html-medium]  heading-level-skip-h5
+      [html-medium]  th-col-scope-missing
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  twitter-link-name
+      [html-medium]  title-empty
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  html-lang-missing
+      [html-high]  search-btn-name
+      [html-high]  heading-level-skip-h5
+      [html-high]  th-col-scope-missing
+      [html-high]  faq-id-wrong-section
+      [html-high]  newsletter-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  title-empty
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-aria-controls
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  skip-links-removed
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✖  kimi-k2.5 (~?B)  70 missed issues
+      [html-low]  faq-id-wrong-section
+      [html-low]  newsletter-label-missing
+      [html-low]  footer-logo-alt-missing
+      [html-low]  twitter-link-name
+      [html-medium]  html-lang-missing
+      [html-medium]  click-here-link
+      [html-medium]  th-col-scope-missing
+      [html-medium]  faq-id-wrong-section
+      [html-medium]  newsletter-label-missing
+      [html-medium]  footer-logo-alt-missing
+      [html-medium]  search-label-missing
+      [html-medium]  hero-img-alt-missing
+      [html-medium]  logo-bar-aria-label
+      [html-medium]  partner-logo-alt
+      [html-medium]  features-heading-id
+      [html-medium]  learn-more-link
+      [html-medium]  step1-heading-skip
+      [html-medium]  step1-img-alt-missing
+      [html-medium]  filter-btn-aria-pressed
+      [html-medium]  contrast-studio-alt
+      [html-medium]  contrast-studio-link
+      [html-medium]  pricing-toggle-role
+      [html-medium]  featured-plan-label
+      [html-medium]  table-caption-missing
+      [html-medium]  th-row-scope-missing
+      [html-medium]  td-icon-aria-label
+      [html-medium]  testimonial-avatar-alt
+      [html-medium]  faq-aria-controls
+      [html-medium]  faq-dd-region
+      [html-medium]  contact-label-missing
+      [html-high]  footer-logo-alt-missing
+      [html-high]  twitter-link-name
+      [html-high]  search-label-missing
+      [html-high]  hero-img-alt-missing
+      [html-high]  logo-bar-aria-label
+      [html-high]  partner-logo-alt
+      [html-high]  features-heading-id
+      [html-high]  learn-more-link
+      [html-high]  step1-heading-skip
+      [html-high]  step1-img-alt-missing
+      [html-high]  filter-btn-aria-pressed
+      [html-high]  contrast-studio-alt
+      [html-high]  contrast-studio-link
+      [html-high]  pricing-toggle-role
+      [html-high]  featured-plan-label
+      [html-high]  table-caption-missing
+      [html-high]  th-row-scope-missing
+      [html-high]  td-icon-aria-label
+      [html-high]  testimonial-avatar-alt
+      [html-high]  faq-dd-region
+      [html-high]  contact-label-missing
+      [html-high]  main-nav-aria-label
+      [html-high]  mobile-toggle-aria
+      [html-high]  subnav-btn-aria
+      [html-high]  search-form-role
+      [html-high]  account-nav-label
+      [html-high]  main-id-missing
+      [html-high]  live-region-removed
+      [html-high]  hero-section-label
+      [html-high]  filter-group-label
+      [html-high]  product-grid-label
+      [html-high]  row-scope-scans
+      [html-high]  marcus-avatar-alt
+      [html-high]  faq-q1-expanded
+      [html-high]  faq-q2-expanded
+      [html-high]  contact-name-autocomplete
+      [html-high]  contact-aria-required
+      [html-high]  contact-msg-describedby
+      [html-high]  products-nav-label
+      [html-high]  linkedin-link-name
+  ✓  glm-5 (~?B)
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑧ COMPLEXITY REGRESSION ANALYSIS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Measures how model performance degrades as code complexity increases.
+  Lower degradation slope = more robust model. Graceful degradation preferred over cliff drops.
+
+  Rank Model                     F1(Low) F1(Med) F1(High) Degradation Robustness
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+    1. cogito-2.1:671b (~671B)     46.2%   11.4%   38.1%      17.5% ██████████░░
+    2. gpt-oss:120b (~120B)        66.7%   79.2%   50.0%      25.0% █████████░░░
+    3. mistral-large-3:675b (~675B)   47.1%   18.4%   34.4%      27.0% █████████░░░
+    4. qwen3-coder:480b (~480B)    30.8%   11.1%   20.7%      32.8% ████████░░░░
+    5. minimax-m2.5 (~456B MoE)    66.7%   13.9%   38.1%      42.9% ███████░░░░░
+    6. gemini-3-flash-preview (~?B)   62.5%   23.8%   34.9%      44.1% ███████░░░░░
+    7. kimi-k2.5 (~?B)             75.0%   13.5%   34.9%      53.4% ██████░░░░░░
+    8. nemotron-3-nano:30b (~30B)   30.8%   55.9%   14.0%      54.4% █████░░░░░░░
+    9. devstral-2:123b (~123B)     57.1%   17.9%   21.1%      63.2% ████░░░░░░░░
+   10. ministral-3:14b (~14B)      57.1%   15.8%   14.3%      75.0% ███░░░░░░░░░
+   11. qwen3-coder-next (~?B)      46.2%    6.1%    7.5%      83.6% ██░░░░░░░░░░
+   12. minimax-m2 (~456B MoE)      33.3%   50.0%    0.0%     100.0% ░░░░░░░░░░░░
+   13. deepseek-v3.2 (~671B MoE)   66.7%   65.8%    0.0%     100.0% ░░░░░░░░░░░░
+   14. qwen3.5:397b (~397B)        66.7%   80.0%    0.0%     100.0% ░░░░░░░░░░░░
+
+  Interpretation: Slope = (F1_low - F1_high) / F1_low. Lower slope = graceful degradation. 0% = no degradation, 100% = complete failure on complex code.
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░  ⑩ STREAMING QUALITY ANALYSIS  ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Measures how model quality evolves as partial responses are generated.
+  Early-stopping is viable if F1 plateaus before 100% token count.
+
+  Rank Model                      F1@25%  F1@50%  F1@75% F1@100%    Plateau
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+    1. ministral-3:14b (~14B)      17.9%   20.0%   20.5%   25.8%       100%
+    2. nemotron-3-nano:30b (~30B)   39.3%   36.8%   35.6%   39.1%        25%
+    3. gemini-3-flash-preview (~?B)   22.9%   36.9%   41.4%   36.3%        50%
+    4. minimax-m2 (~456B MoE)      18.2%   33.3%   30.8%   44.4%       100%
+    5. minimax-m2.5 (~456B MoE)    26.1%   36.4%   39.5%   33.1%        50%
+    6. deepseek-v3.2 (~671B MoE)   19.8%   26.7%   43.3%   49.6%       100%
+    7. devstral-2:123b (~123B)     15.9%   16.2%   18.3%   28.5%       100%
+    8. gpt-oss:120b (~120B)        24.7%   42.3%   52.8%   68.8%       100%
+    9. cogito-2.1:671b (~671B)     18.9%   20.5%   23.2%   26.8%       100%
+   10. mistral-large-3:675b (~675B)   19.9%   26.1%   28.6%   29.6%        75%
+   11. qwen3.5:397b (~397B)        35.3%   53.8%   50.8%   56.7%        50%
+   12. qwen3-coder:480b (~480B)    13.9%   18.8%   21.2%   18.4%        50%
+   13. qwen3-coder-next (~?B)      14.1%   18.8%   24.2%   16.5%        50%
+   14. kimi-k2.5 (~?B)             22.0%   37.1%   44.2%   34.2%        50%
+   15. glm-5 (~?B)                  0.0%    0.0%    0.0%  100.0%       100%
+
+  Plateau = earliest % of tokens where F1 reaches 90% of final value.
+  Green = early plateau (early stopping possible).
+  Yellow = full response needed for optimal quality.
+
+▐░░░░░░░░░░░░░░░░░░░░░░░░  ⑪ PARETO FRONTIER ANALYSIS  (Quality vs. Latency Tradeoff)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Identifies optimal models on the F1 vs. latency tradeoff curve.
+  Pareto-optimal models have no competitor that is both faster AND more accurate.
+
+  Rank Model                          F1   Latency          Status
+─────────────────────────────────────────────────────    ─────────────────────────────────────────────────────
+    1. gemini-3-flash-preview (~?B)   36.3%     10.3s ⭐ PARETO-OPTIMAL
+    2. gpt-oss:120b (~120B)        68.8%    102.4s ⭐ PARETO-OPTIMAL
+    3. glm-5 (~?B)                100.0%    208.6s ⭐ PARETO-OPTIMAL
+·····················································    ·····················································
+    4. ministral-3:14b (~14B)      25.8%    151.0s Dominated by nemotron-3-nano:30b (~30B), gemini-3-flash-preview (~?B), minimax-m2.5 (~456B MoE), devstral-2:123b (~123B), gpt-oss:120b (~120B), mistral-large-3:675b (~675B), qwen3.5:397b (~397B)
+    5. nemotron-3-nano:30b (~30B)   39.1%    102.9s Dominated by gpt-oss:120b (~120B)
+    6. minimax-m2 (~456B MoE)      44.4%    215.2s Dominated by gpt-oss:120b (~120B), qwen3.5:397b (~397B), glm-5 (~?B)
+    7. minimax-m2.5 (~456B MoE)    33.1%     91.0s Dominated by gemini-3-flash-preview (~?B)
+    8. deepseek-v3.2 (~671B MoE)   49.6%    511.1s Dominated by gpt-oss:120b (~120B), qwen3.5:397b (~397B), glm-5 (~?B)
+    9. devstral-2:123b (~123B)     28.5%     84.0s Dominated by gemini-3-flash-preview (~?B), mistral-large-3:675b (~675B)
+   10. cogito-2.1:671b (~671B)     26.8%    673.6s Dominated by nemotron-3-nano:30b (~30B), gemini-3-flash-preview (~?B), minimax-m2 (~456B MoE), minimax-m2.5 (~456B MoE), deepseek-v3.2 (~671B MoE), devstral-2:123b (~123B), gpt-oss:120b (~120B), mistral-large-3:675b (~675B), qwen3.5:397b (~397B), kimi-k2.5 (~?B), glm-5 (~?B)
+   11. mistral-large-3:675b (~675B)   29.6%     49.9s Dominated by gemini-3-flash-preview (~?B)
+   12. qwen3.5:397b (~397B)        56.7%    103.8s Dominated by gpt-oss:120b (~120B)
+   13. qwen3-coder:480b (~480B)    18.4%    135.4s Dominated by nemotron-3-nano:30b (~30B), gemini-3-flash-preview (~?B), minimax-m2.5 (~456B MoE), devstral-2:123b (~123B), gpt-oss:120b (~120B), mistral-large-3:675b (~675B), qwen3.5:397b (~397B)
+   14. qwen3-coder-next (~?B)      16.5%    159.5s Dominated by ministral-3:14b (~14B), nemotron-3-nano:30b (~30B), gemini-3-flash-preview (~?B), minimax-m2.5 (~456B MoE), devstral-2:123b (~123B), gpt-oss:120b (~120B), mistral-large-3:675b (~675B), qwen3.5:397b (~397B), qwen3-coder:480b (~480B)
+   15. kimi-k2.5 (~?B)             34.2%    248.5s Dominated by nemotron-3-nano:30b (~30B), gemini-3-flash-preview (~?B), minimax-m2 (~456B MoE), gpt-oss:120b (~120B), qwen3.5:397b (~397B), glm-5 (~?B)
+
+  ASCII scatter: F1 (vertical) vs. Latency (horizontal)
+  Pareto optimal models marked with ●, others with ○
+
+  1.00                   ●                                          
+  0.94                                                              
+  0.88                                                              
+  0.82                                                              
+  0.76                                                              
+  0.70          ●                                                   
+  0.65                                                              
+  0.59          ○                                                   
+  0.53                                           ○                  
+  0.47                   ○                                          
+  0.41   ●      ○           ○                                       
+  0.35      ○  ○                                                    
+  0.29              ○                                         ○     
+  0.23             ○ ○                                              
+  0.17                                                              
+  0.00  ────────────────────────────────────────────────────────────
+        0ms                                             740933ms
+
+  Conclusion: 3 models on Pareto frontier.
+  Choose based on your needs: faster models (left) or more accurate (top).
+
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+
+▐░░░░░░░░░░░░░░░░░░░░░░░  ⑫ ADVERSARIAL BLIND SPOTS  (Step 6: Vulnerability Analysis)  ░░░░░░░░░░░░░░░░░░░░░░░░▌
+
+  Each model's known weak spots:
+
+                      ModelCritical   Weak    Good    
+  ───────────────────────────────────────────────────────
+  ministral-3:14b (~14B)   0          0       0       
+  nemotron-3-nano:30b (~30B0          0       0       
+  gemini-3-flash-preview (~0          0       0       
+  minimax-m2 (~456B MoE)   0          0       0       
+  minimax-m2.5 (~456B MoE) 0          0       0       
+  deepseek-v3.2 (~671B MoE)0          0       0       
+  devstral-2:123b (~123B)  0          0       0       
+  gpt-oss:120b (~120B)     0          0       0       
+  cogito-2.1:671b (~671B)  0          0       0       
+  mistral-large-3:675b (~670          0       0       
+  qwen3.5:397b (~397B)     0          0       0       
+  qwen3-coder:480b (~480B) 0          0       0       
+  qwen3-coder-next (~?B)   0          0       0       
+  kimi-k2.5 (~?B)          0          0       0       
+  glm-5 (~?B)              0          0       0       
+
+  Critical blind spots (< 25% detection):
+
+  ✓ No critical blind spots detected across any model.
+  Summary:
+
+  ✓ Most robust model: ministral-3:14b (~14B)
+    • Catches 0 violation types fully
+
+  ✗ Weakest robustness: glm-5 (~?B)
+    • Catches 0 violation types fully
+
+  💡 Key insight: No single model perfectly catches all violation types.
+     Combine results or use models in sequence to maximize coverage.
+
+══════════════════════════════════════════════════════════════════════════════════════════════════════════════
+

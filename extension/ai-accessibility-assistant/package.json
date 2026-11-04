@@ -1,0 +1,91 @@
+{
+  "name": "ai-accessibility-assistant",
+  "displayName": "AI Accessibility Assistant",
+  "description": "AI-powered accessibility analysis for HTML, CSS, JavaScript and TSX files with NASA-TLX cognitive load estimation.",
+  "version": "1.0.0",
+  "publisher": "dissertation-local",
+  "engines": {
+    "vscode": "^1.108.0"
+  },
+  "categories": ["Linters", "Other"],
+
+  "activationEvents": [
+    "onView:aiAccessibilityAssistant.panel"
+  ],
+
+  "main": "./dist/extension.js",
+
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "aiAccessibilityAssistant",
+          "title": "Accessibility Assistant",
+          "icon": "media/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "aiAccessibilityAssistant": [
+        {
+          "type": "webview",
+          "id": "aiAccessibilityAssistant.panel",
+          "name": "Accessibility Assistant"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "ai-accessibility-assistant.analyseFile",
+        "title": "Accessibility: Analyse Current File"
+      },
+      {
+        "command": "ai-accessibility-assistant.tlxAnalysis",
+        "title": "Accessibility: NASA TLX Analysis"
+      }
+    ],
+    "configuration": {
+      "title": "AI Accessibility Assistant",
+      "properties": {
+        "aiAccessibilityAssistant.ollamaHost": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Base URL for the Ollama server."
+        },
+
+        "aiAccessibilityAssistant.ragEndpoint": {
+        "type": "string",
+        "default": "http://localhost:8000",
+        "description": "RAG retrieval service endpoint (FastAPI + Chroma)."
+        }
+      }
+    }
+  },
+
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.108.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.54.0",
+    "eslint": "^9.39.2",
+    "esbuild": "^0.27.2",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}

@@ -1,0 +1,87 @@
+ 
+
+Removed 
+
+Reason 
+
+qwen3-vl:235b-cloud 
+
+"VL" = Vision-Language — wrong modality for a code/text task. Slowest by far at 875s avg (hitting 900s timeouts), 0 TPs on html-medium, only 4 TPs total with 86 FNs. 
+
+gpt-oss:20b-cloud 
+
+0 TPs across the entire benchmark. MCC=0.000. It never reported any issues — not auditing, just abstaining. 115s average for zero useful output. 
+
+gemma3:4b-cloud 
+
+Too small (4B). MCC was negative (−0.044), predictions anti-correlated with ground truth. Hallucinated on clean fixtures, missed nearly everything on error fixtures. 
+
+ministral-3:3b-cloud 
+
+Too small (3B). Only 2 TPs across the whole benchmark (88 FNs). MCC=0.029, essentially random. Averaged 0.8 issues/run — barely auditing at all. 
+
+qwen3.5 (~397B) (non-cloud) 
+
+Redundant duplicate of qwen3.5:397b-cloud which stayed. Lower composite score, slower, no differentiation value. 
+
+nemotron-3-super:cloud 
+
+Worst composite in the entire new run (11.1%) and wildly erratic — F1 swings from 13.9% (norag-nothink) to 49.8% (norag-think), making it unreliable and unpredictable. Also the slowest at ~690s avg, up to 885s p95. 
+
+devstral-small-2:24b-cloud 
+
+Consistently bottom tier across all 4 conditions (composite 28–41%, F1 15–27%). Only 4 TPs in the old 23-model test out of 90 issues — 86 FNs. A 24B model offering micro-model-level results. 
+
+gemma3:27b-cloud 
+
+The most consistently bad model — F1 never exceeds 15% regardless of condition (11.7%, 12.6%, 15.0%, 13.7%). Composite hovers around 25–30%. Adding RAG or thinking makes no difference whatsoever. 
+
+phi4-reasoning:14b added to the benchmark (run.ts, benchmark.ts) — This is Microsoft's Phi-4 Reasoning variant, a 14B local model that your mentor specifically called out as an ideal SLM for this kind of task. It's text-primary (no vision), designed for high-efficiency reasoning and instruction following, and runs entirely locally — ticking the mentor's boxes around privacy, latency, and the "small model + good RAG = competitive" hypothesis. 
+
+DeepSeek-R1 was not added — only deepseek-r1:1.5b is installed locally, which at 1.5B is too small to produce meaningful accessibility audits. The cloud variant (deepseek-r1:cloud) is not in your Ollama instance. Worth pulling if you can get access to the 7B+ version. (i have deepseek-v3.2:cloud) 
+
+ 
+
+Context windows increased in the extension (ollama.ts) — thorough preset raised from 32k → 64k tokens, and reasoning preset raised from 32k → 128k tokens, matching your mentor's recommendation. For local models this directly expands how much of a component tree can be held in active memory at once. Cloud models already use their own native context window and ignore this setting, so there's no risk there. 
+
+ 
+
+Language: all languages 
+
+  Models:   16  →  ministral-3:14b (~14B), phi4-reasoning:14b (~14B), nemotron-3-nano:30b (~30B), gemini-3-flash-preview (~?B), minimax-m2 (~456B MoE), minimax-m2.5 (~456B MoE), deepseek-v3.2 (~671B MoE), devstral-2:123b (~123B), gpt-oss:120b (~120B), cogito-2.1:671b (~671B), mistral-large-3:675b (~675B), qwen3.5:397b (~397B), qwen3-coder:480b (~480B), qwen3-coder-next (~?B), kimi-k2.5 (~?B), glm-5 (~?B) 
+
+  Fixtures: 16  →  html-clean, html-low, html-medium, html-high, css-clean, css-low, css-medium, css-high, js-clean, js-low, js-medium, js-high, tsx-clean, tsx-low, tsx-medium, tsx-high 
+
+  Runs:     1 per combination 
+
+  Total:    256 LLM calls 
+
+  
+
+  Concurrency: 2 fixtures in parallel per model 
+
+  Estimated time: ~256 min (varies significantly by model) 
+
+  
+
+  Running… (Ctrl+C to abort) 
+
+[  6%] model=phi4-reasoning:14b (~14B)     fixture=html-low        run=1/1    
+
+  ERROR (phi4-reasoning:14b (~14B) / html-low): Ollama connection failed: fetch failed 
+
+[  7%] model=phi4-reasoning:14b (~14B)     fixture=html-medium     run=1/1    
+
+  ERROR (phi4-reasoning:14b (~14B) / html-clean): Ollama connection failed: fetch failed 
+
+[  7%] model=phi4-reasoning:14b (~14B)     fixture=html-high       run=1/1    
+
+Justification for excluding phi4-reasoning:14b from the Cloud-LLM-Preliminary benchmark: 
+
+phi4-reasoning:14b is installed and runs locally via Ollama but is not available through the cloud Ollama gateway used by the benchmark. The Cloud-LLM-Preliminary evaluation is designed to test models under identical network and infrastructure conditions — all models are routed through the same cloud endpoint, ensuring that latency, throughput, and availability are comparable across the set. Running phi4-reasoning locally would introduce a confounding variable: local inference operates on different hardware, under different memory constraints, and without the gateway's load-balancing behaviour, making its performance results incomparable with the cloud-hosted models. 
+
+Additionally, the benchmark's composite scoring includes a speed component (20% weight). A locally-served model's response time reflects the researcher's local GPU/CPU capacity rather than the model's inherent efficiency, which would distort the ranking and undermine the validity of cross-model comparisons. 
+
+If a cloud-routable variant of Phi-4 Reasoning becomes available through the gateway, it should be added at that point. Alternatively, it could be evaluated in a separate local-only benchmark run with adjusted methodology — for example, reporting latency separately and noting the hardware specification — so that results remain interpretable without conflating local and cloud inference conditions. 
+
+ 

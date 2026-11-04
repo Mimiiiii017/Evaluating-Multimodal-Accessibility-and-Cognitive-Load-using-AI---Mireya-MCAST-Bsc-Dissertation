@@ -1,0 +1,40 @@
+Limitation & Future Work Note — NASA-TLX Source-Only Prediction
+================================================================
+
+Current approach:
+  The NASA-TLX cognitive load prediction pipeline operates on source artefacts
+  (HTML, CSS, JavaScript, TSX). The LLM reasons about potential cognitive load
+  from code structure, ARIA complexity, interaction patterns, and semantic
+  organisation, without ever rendering or visualising the interface.
+
+Limitation:
+  NASA-TLX dimensions — particularly Mental Demand, Effort, and Frustration —
+  are significantly influenced by how a page looks and feels to a real user.
+  Source-level analysis cannot directly reason about:
+    - Visual information density and layout complexity
+    - Rendered contrast ratios and colour relationships
+    - Spatial proximity of labels, controls, and feedback elements
+    - Perceived text size, whitespace, and hierarchy as displayed
+
+  As a result, the current pipeline may underestimate cognitive load caused by
+  visually cluttered or poorly laid-out interfaces, even when the underlying
+  source code appears structurally sound.
+
+Proposed future extension:
+  A subsequent version of the system could integrate a rendered-page
+  visualisation step prior to NASA-TLX scoring:
+    1. Render the code artefact in a headless browser (e.g. Playwright).
+    2. Capture a screenshot of the rendered interface.
+    3. Pass the screenshot to a vision-capable LLM alongside the source.
+    4. Predict NASA-TLX scores using both visual and structural context.
+
+  This multi-modal approach would more closely approximate the cognitive
+  experience of an actual user interacting with the interface, improving
+  the ecological validity of the TLX predictions.
+
+Dissertation framing suggestion:
+  "The current implementation predicts NASA-TLX scores from source artefacts.
+  A future extension could incorporate rendered-page visual analysis —
+  for example via headless browser screenshot and a vision-capable model —
+  to better approximate user-perceived cognitive load across the six NASA-TLX
+  dimensions, particularly Mental Demand and Frustration."
