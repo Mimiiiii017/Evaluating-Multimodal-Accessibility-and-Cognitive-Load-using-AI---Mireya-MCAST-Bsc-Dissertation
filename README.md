@@ -2,12 +2,12 @@
 
 BSc (Hons) Creative Computing dissertation project by **Mireya Francesca Vella**.
 
+[Read the submitted dissertation (PDF)](docs/dissertation/dissertation.pdf)
+
 An AI-powered **Visual Studio Code extension** for analysing HTML, CSS, JavaScript,
 and TypeScript/React source code for WCAG 2.2 accessibility barriers. The system
 also provides remediation guidance and a NASA-TLX-informed estimate of the
 workload that those barriers may impose on users.
-
-[Read the submitted dissertation (PDF)](docs/dissertation/dissertation.pdf)
 
 ## Project
 
@@ -35,12 +35,12 @@ The extension exposes two commands:
 
 The dissertation reports a six-study evaluation programme:
 
-1. [Screening candidate language models](research-results/Study%201%20-%20model-screening/).
-2. [Comparing model and prompt configurations](research-results/Study%202%20-%20parameter-selection/).
-3. [Performing more detailed detection testing](research-results/Study%203%20-%20detailed-evaluation/).
-4. [Benchmarking the NASA-TLX workload-estimation pipeline](research-results/Study%204%20-%20nasa-tlx/).
-5. [Validating the assistant with developers and assistive-technology users](research-results/Study%205%20-%20real-world-validation/).
-6. [Comparing the assistant with established accessibility tools](research-results/Study%206%20-%20tool-comparison/).
+1. Screening candidate language models.
+2. Comparing model and prompt configurations.
+3. Performing more detailed detection testing.
+4. Benchmarking the NASA-TLX workload-estimation pipeline.
+5. Validating the assistant with developers and assistive-technology users.
+6. Comparing the assistant with established accessibility tools.
 
 The evaluated source types are **HTML, CSS, JavaScript, and TypeScript/React
 (TSX)**. The final evaluation compares the assistant with Lighthouse, axe-core,
@@ -75,13 +75,31 @@ interaction-dependent barrier.
 
 | Area | Contents |
 | --- | --- |
-| [VS Code extension](extension/ai-accessibility-assistant/) | Extension source and package metadata |
-| [RAG service](services/rag/) | FastAPI RAG and Ollama proxy service |
-| [Knowledge base](knowledge-base/) | WCAG/accessibility and NASA-TLX documents |
-| [Evaluation harnesses](evaluation/) | Reproducible evaluation scripts and fixtures |
-| [Research results](research-results/) | Experimental outputs and model-testing results |
-| [Dissertation](docs/dissertation/) | Dissertation source, figures, references, and PDF |
-| [Study materials](docs/study-materials/) | Study materials, validation sheets, and surveys |
+| [`extension/ai-accessibility-assistant/`](extension/ai-accessibility-assistant/) | VS Code extension source and package metadata |
+| [`services/rag/`](services/rag/) | FastAPI RAG and Ollama proxy service |
+| [`knowledge-base/`](knowledge-base/) | WCAG/accessibility and NASA-TLX documents |
+| [`evaluation/`](evaluation/) | Reproducible evaluation harnesses and fixtures |
+| [`research-results/`](research-results/) | Experimental outputs and model-testing results |
+| [`docs/dissertation/`](docs/dissertation/) | Dissertation source, figures, references, and PDF |
+| [`docs/study-materials/`](docs/study-materials/) | Study materials, validation sheets, and surveys |
+
+### Study records
+
+Each study folder contains the corresponding outputs and supporting records:
+
+1. [`Study 1 - model-screening`](research-results/Study%201%20-%20model-screening/)
+2. [`Study 2 - parameter-selection`](research-results/Study%202%20-%20parameter-selection/)
+3. [`Study 3 - detailed-evaluation`](research-results/Study%203%20-%20detailed-evaluation/)
+4. [`Study 4 - nasa-tlx`](research-results/Study%204%20-%20nasa-tlx/)
+5. [`Study 5 - real-world-validation`](research-results/Study%205%20-%20real-world-validation/)
+   - [`Developer validation records`](research-results/Study%205%20-%20real-world-validation/developer-validation/)
+   - [`Anonymised vision-impaired participant materials`](research-results/Study%205%20-%20real-world-validation/Vision-impaired%20participants/)
+6. [`Study 6 - tool-comparison`](research-results/Study%206%20-%20tool-comparison/)
+
+The main evaluation documentation is also linked directly:
+
+- [`NASA-TLX test-harness README`](evaluation/nasa-tlx/README.md)
+- [`Tool-comparison README`](evaluation/tool-comparison/README.md)
 
 The repository includes both implementation and research material. Generated
 build output, local dependencies, ChromaDB data, environment files, and VS Code
@@ -97,15 +115,11 @@ subject to its own licence.
 
 For citation metadata, see [`CITATION.cff`](CITATION.cff).
 
-Study 5 contains the approved evaluation records used for the dissertation:
-
-- [Developer validation records](research-results/Study%205%20-%20real-world-validation/developer-validation/)
-- [Developer validation master sheet](research-results/Study%205%20-%20real-world-validation/developer-validation/Developer_Validation_Master_Sheet.xlsx)
-- [Developer study information](research-results/Study%205%20-%20real-world-validation/developer-validation/Study%20Information.xlsx)
-- [Vision-impaired participant materials](research-results/Study%205%20-%20real-world-validation/Vision-impaired%20participants/)
-
-These materials are included as research material; do not add new identifying
-information when extending the dataset.
+Study 5 contains the approved developer and participant evaluation records used
+for the dissertation. The [developer validation records](research-results/Study%205%20-%20real-world-validation/developer-validation/)
+and [anonymised vision-impaired participant materials](research-results/Study%205%20-%20real-world-validation/Vision-impaired%20participants/)
+are included as research material; do not add new identifying information when
+extending the dataset.
 
 ## Environment
 
@@ -173,11 +187,7 @@ npm test
 
 See the [tool-comparison README](evaluation/tool-comparison/README.md) and
 [NASA-TLX README](evaluation/nasa-tlx/README.md) for study-specific
-methodology, fixtures, and output descriptions. The complete implementation
-and result locations are also available for [Study 1](evaluation/model-screening/),
-[Study 2](evaluation/parameter-evaluation/), [Study 3](evaluation/detailed-evaluation/),
-[Study 4](evaluation/nasa-tlx/), and [Study 6](evaluation/tool-comparison/).
-Study 5's records and materials are linked above.
+methodology, fixtures, and output descriptions.
 
 ## Known limitations
 
@@ -193,8 +203,6 @@ Study 5's records and materials are linked above.
   beyond the evaluated fixtures and participants.
 
 ## Dissertation
-
-[Read the submitted dissertation (PDF)](docs/dissertation/dissertation.pdf).
 
 The dissertation source is in
 [`docs/dissertation/`](docs/dissertation/),
